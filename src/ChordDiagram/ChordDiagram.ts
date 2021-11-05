@@ -202,6 +202,7 @@ export class ChordDiagram {
       })
       .rotate(90);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const coverTopGradientDebug = this.draw
       .gradient("linear", (add: Gradient) => {
         add.stop(0, "rgba(255,0,0)", 0.5);
@@ -218,6 +219,7 @@ export class ChordDiagram {
       })
       .rotate(90);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const coverBottomGradientDebug = this.draw
       .gradient("linear", (add: Gradient) => {
         add.stop(0, "rgba(0,255,0)", 0.5);
