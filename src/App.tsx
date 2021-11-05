@@ -1,25 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import styled from "@emotion/styled";
+import ConfigurationPanel from "./components/ConfigurationPanel";
+import MainChord from './components/MainChord';
+import {defaultParams, ChordDiagramParams} from "./ChordDiagram"
+
+const Main = styled.div`
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+`;
 
 function App() {
+
+    const [chords, setChords] = useState<any[]>([{note: "", type: ""}]);
+    const [diagramConfiguration, setDiagramConfiguration] = useState<ChordDiagramParams>({...defaultParams, debugMode: true})
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Main>
+        <ConfigurationPanel
+            chords={chords}
+            setChords={setChords}
+            diagramConfiguration={diagramConfiguration}
+            setDiagramConfiguration={setDiagramConfiguration}
+        />
+        <MainChord
+            diagramConfiguration={diagramConfiguration}
+            chords={chords}
+        />
+    </Main>
   );
 }
 
