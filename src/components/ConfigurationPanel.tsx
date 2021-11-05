@@ -40,13 +40,7 @@ function ConfigurationPanel(props: ConfigurationPanelProps) {
                 setChords={props.setChords}
               />
             ),
-          },
-          {
-            title: "Chords Text",
-            content: (
-              <ChordsInput chords={props.chords} setChords={props.setChords}/>
-            ),
-          },
+          }
         ]}
       />
     </Wrapper>

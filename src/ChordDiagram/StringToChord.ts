@@ -19,6 +19,11 @@ type Fingering = {
   barre: Barre
 }
 
+const sortFingers = (fingerA: Finger, fingerB: Finger): number => {
+  const fingerAString = Array.isArray(fingerA.string) ? fingerA.string[0] : fingerA.string;
+  const fingerBString = Array.isArray(fingerB.string) ? fingerB.string[0] : fingerB.string;
+  return fingerA.fret === fingerB.fret ? fingerBString - fingerAString : fingerA.fret - fingerB.fret;
+};
 
 export function stringToChord(chord: string): Chord | null {
   const chordFingerings = findGuitarChord(chord);
@@ -29,9 +34,7 @@ export function stringToChord(chord: string): Chord | null {
   const mutedStrings: number[] = [1, 2, 3, 4, 5, 6];
   const fingers: Finger[] = [];
   let currentBarre: [number, number] | null = null
-  let currentBarreFret: number | null = null; 
-
-  console.log(chordFingerings.fingerings[0])
+  let currentBarreFret: number | null = null;
 
   positions.reverse().forEach((position: Position) => {
     const { fret, stringIndex } = position;
@@ -44,7 +47,7 @@ export function stringToChord(chord: string): Chord | null {
     }
 
     if (fret === 0) {
-      openStrings.push(stringIndex);
+      openStrings.push(6 - stringIndex);
     } else {
       fingers.push({
         index: 0,
@@ -53,15 +56,17 @@ export function stringToChord(chord: string): Chord | null {
       });
     }
 
-    if (mutedStrings.includes(stringIndex)) {
-      mutedStrings.splice(mutedStrings.indexOf(stringIndex), 1);
+    if (mutedStrings.includes(6 - stringIndex)) {
+      mutedStrings.splice(mutedStrings.indexOf(6 - stringIndex), 1);
     }
   });
 
   const filteredFingers: Finger[] = fingers.filter(finger => {
     return !currentBarre || currentBarreFret !== finger.fret || 
     (Array.isArray(finger.string) && currentBarreFret === finger.fret && currentBarre[0] === finger.string[0]);
-  }).map((finger, index) => ({...finger, index: index + 1}))
+  })
+  .sort(sortFingers)
+  .map((finger, index) => ({...finger, index: index + 1}))
 
   const position = Math.min(...fingers.map((finger) => finger.fret));
 
@@ -72,6 +77,5 @@ export function stringToChord(chord: string): Chord | null {
     openStrings,
   };
 
-  console.log(chordObject);
   return chordObject;
 }

@@ -42,7 +42,7 @@ export const defaultParams: ChordDiagramParams = {
   showTuning: true,
   showFretsLabels: false,
   showBridgeLabel: false,
-  showFingerLabels: false,
+  showFingerLabels: true,
   showOpenStringsLabels: false,
   tuning: ["E", "A", "D", "G", "B", "E"],
   defaultColor: "#666666",
@@ -318,11 +318,12 @@ export class ChordDiagram {
             : this.drawText(
                 this.elements.layers.fretLabels,
                 fretLabelXPosition,
-                fromY -
-                  this.params.fretsWidth / 2 -
-                  this.calcedParams.fontSize * 0.7,
+                fromY - this.calcedParams.fretSpacing / 2 - this.calcedParams.fontSize * 0.75,
                 i.toString(),
-                this.params.textColor
+                this.params.textColor,
+                {
+                  opacity: i === 1 && !this.params.showFretsLabels ? 0 : 1
+                }
               ),
       };
     }
@@ -356,7 +357,7 @@ export class ChordDiagram {
     // frets top label cover
     this.elements.fretsLabelCoverTop = {
       node: this.elements.layers.fretLabelsCover
-        .rect(labelCoverWidth, topLabelCoverHeight)
+        .rect(labelCoverWidth, topLabelCoverHeight + this.calcedParams.fontSize / 2.5)
         .stroke({ width: 0 })
         .fill(coverTopGradient),
     };
@@ -375,7 +376,7 @@ export class ChordDiagram {
       this.elements.fretsLabelCoverSide = {
         node: this.elements.layers.fretLabelsCover
           .rect(labelCoverWidth, topLabelCoverHeight)
-          .move(0, this.calcedParams.origin.y + this.calcedParams.fontSize)
+          .move(0, this.calcedParams.origin.y + this.calcedParams.fontSize * 2)
           .stroke({ width: 0 })
           .fill(coverBottomGradient),
       };
@@ -579,15 +580,17 @@ export class ChordDiagram {
     const { string, fret } = finger;
     
     const actualString = Array.isArray(string) ? string[0] : string;
-    const fretsToAdd = chordPosition === 0 ? 0 : 1;
-    const forcePositionAdd = this.params.forcePosition || this.params.forcePosition === 0 ? fretsToAdd - this.params.forcePosition! : 0;
+    const fretsToAdd = chordPosition <= 1 ? 0 : 1;
+    const isForcePositionExists = this.params.forcePosition !== undefined && !isNaN(this.params.forcePosition);
+    const forcePositionAdd = isForcePositionExists ? fretsToAdd - this.params.forcePosition! : 0;
+    const finalAdd = fretsToAdd + forcePositionAdd;
     const moveToX =
       this.calcedParams.origin.x +
       (this.params.numOfStrings - actualString - 0.25) *
         this.calcedParams.stringSpacing;
     const moveToY =
       this.calcedParams.origin.y +
-      (fret - chordPosition + fretsToAdd + forcePositionAdd - 0.75) *
+      (fret - chordPosition + finalAdd - 0.75) *
         this.calcedParams.fretSpacing;
     let barreLength;
     if (Array.isArray(string) && string[1]) {
@@ -598,7 +601,8 @@ export class ChordDiagram {
 
   moveDiagramToFret(fretNumber: number, animate?: boolean) {
     const maxStartFret = 25 - this.params.numOfFrets;
-    if (fretNumber > maxStartFret) {
+    const topFretLine = fretNumber <= 1 ? 0 : fretNumber;
+    if (topFretLine > maxStartFret) {
       console.error(`Max fret allowed as start position is ${maxStartFret}`);
       return;
     }
@@ -610,32 +614,33 @@ export class ChordDiagram {
     if (animate) {
       this.elements.layers.bridge
         .animate(this.calcedParams.animationDuration)
-        .y(bridgeTopY - this.calcedParams.fretSpacing * fretNumber);
+        .y(bridgeTopY - this.calcedParams.fretSpacing * topFretLine);
       this.elements.layers.frets
         .animate(this.calcedParams.animationDuration)
         .y(
           this.calcedParams.origin.y -
-            this.calcedParams.fretSpacing * fretNumber
+            this.calcedParams.fretSpacing * topFretLine
         );
       this.elements.layers.fretLabels
         .animate(this.calcedParams.animationDuration)
-        .y(labelsTopY - this.calcedParams.fretSpacing * fretNumber);
+        .y(labelsTopY - this.calcedParams.fretSpacing * topFretLine);
     } else {
       this.elements.layers.bridge.y(
-        bridgeTopY - this.calcedParams.fretSpacing * fretNumber
+        bridgeTopY - this.calcedParams.fretSpacing * topFretLine
       );
       this.elements.layers.frets.y(
-        this.calcedParams.origin.y - this.calcedParams.fretSpacing * fretNumber
+        this.calcedParams.origin.y - this.calcedParams.fretSpacing * topFretLine
       );
       this.elements.layers.fretLabels.y(
-        labelsTopY - this.calcedParams.fretSpacing * fretNumber
+        labelsTopY - this.calcedParams.fretSpacing * topFretLine
       );
     }
   }
 
   drawChord(chord: Chord, title: string, animate?: boolean) {
+    console.log(chord);
     if (this.params.forcePosition === undefined || isNaN(this.params.forcePosition)) {
-      this.moveDiagramToFret(chord.position === 0 ? chord.position : chord.position - 1, animate);
+      this.moveDiagramToFret(chord.position, animate);
     };
 
     for (let i = 1; i < 5; i++) {

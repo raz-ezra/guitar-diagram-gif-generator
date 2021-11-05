@@ -14,7 +14,7 @@ const Main = styled.div`
 `;
 
 function App() {
-  const [chords, setChords] = useState<string[]>(["C", "Dmin", "A7b9"]);
+  const [chords, setChords] = useState<string[]>(["C", "Cmaj7", "C7", "F", "F/E", "D", "G", "Amin", "A-maj7", "Am7", "A-6", "F", "Eb", "G", "C"]);
 
   try {
     // TODO - use this

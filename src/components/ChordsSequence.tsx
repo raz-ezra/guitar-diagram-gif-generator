@@ -1,6 +1,7 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import styled from "@emotion/styled";
 import ChordConfiguration from "./ChordConfiguration";
+import TextField from "@mui/material/TextField";
 
 const StyledButton = styled.button`
   padding: 5px;
@@ -15,6 +16,16 @@ const ButtonWrapper = styled.div`
   padding: 30px 20px 20px;
   display: flex;
   justify-content: flex-end;
+`;
+
+const InputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+`;
+
+const StyledTextField = styled(TextField)`
+  background-color: rgba(25, 118, 210, 0.1);
 `;
 
 type ConfigurationPanelProps = {
@@ -39,11 +50,22 @@ function ChordsSequence(props: ConfigurationPanelProps) {
     props.setChords(newChords);
   };
 
+  const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
+    props.setChords(e.target.value === "" ? [""] : e.target.value.split(" "));
+}
+
   return (
     <>
+      <InputWrapper>
+        <StyledTextField
+          label={"Chord Sequence Text Input"}
+          value={props.chords.join(" ")}
+          onChange={handleTextChange}
+        />
+      </InputWrapper>
       {props.chords.map((chord, index) => (
         <ChordConfiguration
-          key={index}
+          key={`${index}_${chord}`}
           index={index}
           chord={chord}
           onChange={handleChange}
