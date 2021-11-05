@@ -4,7 +4,6 @@ import DiagramConfiguration from "./DiagramConfiguration";
 import ChordsSequence from "./ChordsSequence";
 import BasicTabs from "./layout/BasicTabs";
 import { ChordDiagramParams } from "../ChordDiagram";
-import { ChordsInput } from "./ChordsInput";
 
 const Wrapper = styled.div`
   height: 100%;
