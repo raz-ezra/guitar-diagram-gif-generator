@@ -1,19 +1,19 @@
 {
   "files": {
     "main.css": "/guitar-diagram-gif-generator/static/css/main.4a4137e4.chunk.css",
-    "main.js": "/guitar-diagram-gif-generator/static/js/main.0e43b97e.chunk.js",
-    "main.js.map": "/guitar-diagram-gif-generator/static/js/main.0e43b97e.chunk.js.map",
+    "main.js": "/guitar-diagram-gif-generator/static/js/main.5fa5a3ce.chunk.js",
+    "main.js.map": "/guitar-diagram-gif-generator/static/js/main.5fa5a3ce.chunk.js.map",
     "runtime-main.js": "/guitar-diagram-gif-generator/static/js/runtime-main.8ed44ea8.js",
     "runtime-main.js.map": "/guitar-diagram-gif-generator/static/js/runtime-main.8ed44ea8.js.map",
     "static/css/2.6bd0b7a0.chunk.css": "/guitar-diagram-gif-generator/static/css/2.6bd0b7a0.chunk.css",
-    "static/js/2.2655cbd1.chunk.js": "/guitar-diagram-gif-generator/static/js/2.2655cbd1.chunk.js",
-    "static/js/2.2655cbd1.chunk.js.map": "/guitar-diagram-gif-generator/static/js/2.2655cbd1.chunk.js.map",
+    "static/js/2.7312a5b9.chunk.js": "/guitar-diagram-gif-generator/static/js/2.7312a5b9.chunk.js",
+    "static/js/2.7312a5b9.chunk.js.map": "/guitar-diagram-gif-generator/static/js/2.7312a5b9.chunk.js.map",
     "static/js/3.7a9460ca.chunk.js": "/guitar-diagram-gif-generator/static/js/3.7a9460ca.chunk.js",
     "static/js/3.7a9460ca.chunk.js.map": "/guitar-diagram-gif-generator/static/js/3.7a9460ca.chunk.js.map",
     "index.html": "/guitar-diagram-gif-generator/index.html",
     "static/css/2.6bd0b7a0.chunk.css.map": "/guitar-diagram-gif-generator/static/css/2.6bd0b7a0.chunk.css.map",
     "static/css/main.4a4137e4.chunk.css.map": "/guitar-diagram-gif-generator/static/css/main.4a4137e4.chunk.css.map",
-    "static/js/2.2655cbd1.chunk.js.LICENSE.txt": "/guitar-diagram-gif-generator/static/js/2.2655cbd1.chunk.js.LICENSE.txt",
+    "static/js/2.7312a5b9.chunk.js.LICENSE.txt": "/guitar-diagram-gif-generator/static/js/2.7312a5b9.chunk.js.LICENSE.txt",
     "static/media/300.css": "/guitar-diagram-gif-generator/static/media/roboto-vietnamese-300-normal.af9afdc1.woff2",
     "static/media/400.css": "/guitar-diagram-gif-generator/static/media/roboto-vietnamese-400-normal.c0bec65d.woff2",
     "static/media/500.css": "/guitar-diagram-gif-generator/static/media/roboto-vietnamese-500-normal.b8e494da.woff2",
@@ -22,8 +22,8 @@
   "entrypoints": [
     "static/js/runtime-main.8ed44ea8.js",
     "static/css/2.6bd0b7a0.chunk.css",
-    "static/js/2.2655cbd1.chunk.js",
+    "static/js/2.7312a5b9.chunk.js",
     "static/css/main.4a4137e4.chunk.css",
-    "static/js/main.0e43b97e.chunk.js"
+    "static/js/main.5fa5a3ce.chunk.js"
   ]
 }
