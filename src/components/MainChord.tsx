@@ -50,9 +50,10 @@ function MainChord(props: MainChordProps) {
 
     useEffect(() => {
         if (chordDiagram.current && props.chords[currentChord]?.note !== "" && props.chords[currentChord]?.type !== "") {
-            chordDiagram.current.drawChord(Chords2[props.chords[currentChord].note][props.chords[currentChord].type], true);
+            const title = props.chords[currentChord].note + props.chords[currentChord].type;
+            chordDiagram.current.drawChord(Chords2[props.chords[currentChord].note][props.chords[currentChord].type], title, true);
         }
-    }, [props.chords, currentChord]);
+    }, [props.chords[currentChord]]);
 
     const handleMoveChord = (direction: number) => {
         if (currentChord + direction < 0) {

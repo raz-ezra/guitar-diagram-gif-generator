@@ -109,7 +109,7 @@ function DiagramConfiguration({diagramConfiguration, setDiagramConfiguration}: C
             </Row>
             <Row>
                 <FormControlLabel
-                    control={<Switch checked={diagramConfiguration.showBridgeLabel} onChange={(e) => handleBooleanChange(e.target.checked, "showFretsLabels")}/>}
+                    control={<Switch checked={diagramConfiguration.showFretsLabels} onChange={(e) => handleBooleanChange(e.target.checked, "showFretsLabels")}/>}
                     label="Show Fret Labels"
                 />
                 <FormControlLabel

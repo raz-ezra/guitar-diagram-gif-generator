@@ -156,6 +156,7 @@ export class ChordDiagram {
             stringsLabels: baseDiagram.group().attr({id: "stringsLabels"}),
             fingers: baseDiagram.group().attr({id: "fingers"}),
             stringMarkings: baseDiagram.group().attr({id: "stringMarkings"}),
+            chordTitle: baseDiagram.group().attr({id: "stringMarkings"}),
         };
 
         const coverTopGradient = this.draw.gradient("linear", (add: Gradient) => {
@@ -450,8 +451,7 @@ export class ChordDiagram {
 
     }
 
-    drawChord(chord: any, animate?: boolean) {
-
+    drawChord(chord: any, title: string, animate?: boolean) {
         this.moveDiagramToFret(chord.position, animate);
         for (let i = 1; i < 5; i++) {
             const finger = chord.fingers.find((finger: number[]) => finger[0] === i);
@@ -509,6 +509,41 @@ export class ChordDiagram {
                     this.elements.layers["openStringMarking" + i].y(this.getOpenStringMarkingBaseYPosition()).opacity(0);
                 }
             }
+        }
+
+        if (!this.elements.currentChordTitle) {
+            this.drawChordTitle(title, animate);
+        } else {
+            this.elements.currentChordTitle.x(0)
+            this.drawChordTitle(title, animate);
+        }
+    }
+
+    drawChordTitle(title: string, animate?: boolean) {
+        if (animate) {
+            this.elements.currentChordTitle = this.drawText(
+                this.elements.layers.chordTitle,
+                this.params.width,
+                this.calcedParams.origin.y / 5,
+                title,
+                this.params.defaultColor,
+                {
+                    size: this.calcedParams.fontSize * 3
+                }
+            ).attr({opacity: 0}).animate(this.calcedParams.animationDuration / 2)
+                .x(this.params.width / 2 - this.calcedParams.fontSize).attr({opacity: 1})
+        }
+        else {
+            this.elements.currentChordTitle = this.drawText(
+                this.elements.layers.chordTitle,
+                this.params.width / 2,
+                this.calcedParams.origin.y / 5,
+                title,
+                this.params.defaultColor,
+                {
+                    size: this.calcedParams.fontSize * 3
+                }
+            )
         }
     }
 }
