@@ -35,6 +35,8 @@ function MainChord(props: MainChordProps) {
   const chordDiagram = useRef<ChordDiagram | null>(null);
   const [currentChord, setCurrentChord] = useState<number>(0);
 
+  const chord = props.chords[currentChord];
+
   useEffect(() => {
     if (diagramWrapper.current) {
       diagramWrapper.current.innerHTML = "";
@@ -51,7 +53,6 @@ function MainChord(props: MainChordProps) {
 
   useEffect(() => {
     if (chordDiagram.current !== null) {
-      const chord = props.chords[currentChord];
       const chordModel = stringToChord(chord);
       if (chordModel) {
         chordDiagram.current.drawChord(chordModel, chord, true);
@@ -60,7 +61,7 @@ function MainChord(props: MainChordProps) {
       }
     }
 
-  }, [props.chords[currentChord]]);
+  }, [chord]);
 
   const handleMoveChord = (direction: number) => {
     if (currentChord + direction < 0) {

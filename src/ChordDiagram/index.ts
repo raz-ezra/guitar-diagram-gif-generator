@@ -1,2 +1,2 @@
 export * from "./ChordDiagram";
-export * from "./ChordBuilder";
+export * from "./StringToChord";

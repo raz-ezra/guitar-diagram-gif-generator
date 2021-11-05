@@ -15,7 +15,7 @@ import {parser} from './parser';
 // ||: Am G | F    C   | C G | F . Em Dm C . . . :||
 // `;
 
-const chords = `|: C G | Am Am Fmaj7 F6  |  C  G | F F Em Dm C C C C :|`;
+// const chords = `|: C G | Am Am Fmaj7 F6  |  C  G | F F Em Dm C C C C :|`;
 
 
 export const parseChords = (input: string) => {

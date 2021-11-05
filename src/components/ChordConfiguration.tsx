@@ -10,35 +10,12 @@ const ChordConfigurationWrapper = styled.div`
   justify-content: space-between;
 `;
 
-const StyledSelectWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const StyledSelect = styled.select<{ width: number }>`
-  width: ${({ width }) => width}px;
-  padding: 5px;
-`;
-
-const StyledButton = styled.button`
-  background-color: #ffffff;
-  padding: 2px 7px;
-`;
-
-const ChordDiagramWrapper = styled.div<{ debugMode: boolean | undefined }>`
-  min-width: 100px;
-  min-height: 120px;
-  ${({ debugMode }) => (debugMode ? "border: 1px solid red;" : null)}
-`;
-
 type ChordConfigurationProps = {
   index: number;
   chord: string;
   onChange: (chord: string, index: number) => void;
   removeChord: (index: number) => void;
 };
-
-
 
 function ChordConfiguration(props: ChordConfigurationProps) {
   const [value, setValue] = useState<string>(props.chord);
@@ -63,6 +40,27 @@ function ChordConfiguration(props: ChordConfigurationProps) {
 }
 
 export default ChordConfiguration;
+
+// const StyledSelectWrapper = styled.div`
+//   display: flex;
+//   flex-direction: column;
+// `;
+
+// const StyledSelect = styled.select<{ width: number }>`
+//   width: ${({ width }) => width}px;
+//   padding: 5px;
+// `;
+
+// const StyledButton = styled.button`
+//   background-color: #ffffff;
+//   padding: 2px 7px;
+// `;
+
+// const ChordDiagramWrapper = styled.div<{ debugMode: boolean | undefined }>`
+//   min-width: 100px;
+//   min-height: 120px;
+//   ${({ debugMode }) => (debugMode ? "border: 1px solid red;" : null)}
+// `;
 
 // const options = {
 //   // Customizations (all optional, defaults shown)

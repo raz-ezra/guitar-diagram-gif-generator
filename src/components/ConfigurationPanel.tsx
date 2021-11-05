@@ -4,6 +4,7 @@ import DiagramConfiguration from "./DiagramConfiguration";
 import ChordsSequence from "./ChordsSequence";
 import BasicTabs from "./layout/BasicTabs";
 import { ChordDiagramParams } from "../ChordDiagram";
+import { ChordsInput } from "./ChordsInput";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -11,8 +12,8 @@ const Wrapper = styled.div`
 `;
 
 type ConfigurationPanelProps = {
-  chords: any[];
-  setChords: (chords: any[]) => void;
+  chords: string[];
+  setChords: (chords: string[]) => void;
   diagramConfiguration: ChordDiagramParams;
   setDiagramConfiguration: (configuration: ChordDiagramParams) => void;
 };
@@ -32,12 +33,18 @@ function ConfigurationPanel(props: ConfigurationPanelProps) {
             ),
           },
           {
-            title: "Chords Sequence",
+            title: "Chords Sequencer",
             content: (
               <ChordsSequence
                 chords={props.chords}
                 setChords={props.setChords}
               />
+            ),
+          },
+          {
+            title: "Chords Text",
+            content: (
+              <ChordsInput chords={props.chords} setChords={props.setChords}/>
             ),
           },
         ]}

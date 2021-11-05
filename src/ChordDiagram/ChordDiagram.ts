@@ -476,7 +476,8 @@ export class ChordDiagram {
     }
 
     // string markings with labels
-    this.elements.stringsMarkings = [];
+    this.elements.openStringMarkins = [];
+    this.elements.mutedStringMarkings = [];
     for (let i = 1; i <= this.params.numOfStrings; i += 1) {
       const openStringMarkingLayerName = "openStringMarking" + i;
       this.elements.layers[openStringMarkingLayerName] =
@@ -484,7 +485,7 @@ export class ChordDiagram {
           .group()
           .attr({ id: openStringMarkingLayerName })
           .opacity(0);
-      this.elements.fingers[i] = {
+      this.elements.openStringMarkins[i] = {
         node: this.drawCircle(
           this.elements.layers[openStringMarkingLayerName],
           this.calcedParams.fretSpacing / 3,
@@ -512,11 +513,11 @@ export class ChordDiagram {
       };
       const mutedStringMarkingLayerName = "mutedStringMarking" + i;
       this.elements.layers[mutedStringMarkingLayerName] =
-        this.elements.layers.fingers
+      this.elements.layers.stringMarkings
           .group()
           .attr({ id: mutedStringMarkingLayerName })
           .opacity(0);
-      this.elements.fingers[i] = {
+      this.elements.mutedStringMarkings[i] = {
         node: null,
         label: this.drawText(
           this.elements.layers[mutedStringMarkingLayerName],
@@ -531,6 +532,14 @@ export class ChordDiagram {
         ),
       };
     }
+
+    //string markings cover
+    this.elements.stringMarkingCover = {
+      node: this.elements.layers.stringMarkings
+        .rect(this.params.width, this.calcedParams.origin.y - this.calcedParams.stringSpacing * 0.75)
+        .stroke({ width: 0 })
+        .fill(this.params.backgroundColor)
+    };
 
     this.moveDiagramToFret(0);
 
@@ -761,12 +770,12 @@ export class ChordDiagram {
   moveOldTitle(chordTitleNumber: number, animate?: boolean) {
     this.elements.layers["chordTitle" + chordTitleNumber].animate(this.calcedParams.animationDuration / 2).x(-this.calcedParams.width / 4).opacity(0);
     setTimeout(() => {
-      this.elements.layers["chordTitle" + chordTitleNumber].clear();
       this.elements.layers["chordTitle" + chordTitleNumber].opacity(1).x(0).clear();
     }, this.calcedParams.animationDuration / 2)
   }
 
   drawChordTitle(title: string, chordTitleNumber: number, animate?: boolean) {
+    this.elements.layers["chordTitle" + chordTitleNumber].opacity(1);
     if (animate) {
         this.elements["chordTitle" + chordTitleNumber] = this.drawText(
           this.elements.layers["chordTitle" + chordTitleNumber],
@@ -782,7 +791,7 @@ export class ChordDiagram {
 
         this.elements["chordTitle" + chordTitleNumber]   
           .animate(this.calcedParams.animationDuration / 2)
-          .x(this.params.width / 2)
+          .x(this.params.width / 2 - this.elements["chordTitle" + chordTitleNumber].length() / 2)
           .attr({ opacity: 1 });
       
     } else {
