@@ -19,6 +19,7 @@ function App() {
   const [chordsText, setChordsText] = useState<string>("C");
 
   try {
+    // TODO - use this
     const chordsFromText = parseChords("|" + chordsText + "|");
     chordsFromText.map((c: string) => camelCase(c, { pascalCase: true }));
   } catch (error: any) {
