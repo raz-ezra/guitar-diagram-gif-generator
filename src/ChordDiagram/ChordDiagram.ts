@@ -635,7 +635,7 @@ export class ChordDiagram {
 
   drawChord(chord: Chord, title: string, animate?: boolean) {
     if (this.params.forcePosition === undefined || isNaN(this.params.forcePosition)) {
-      this.moveDiagramToFret(chord.position, animate);
+      this.moveDiagramToFret(chord.position === 0 ? chord.position : chord.position - 1, animate);
     };
 
     for (let i = 1; i < 5; i++) {

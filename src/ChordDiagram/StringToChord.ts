@@ -63,9 +63,11 @@ export function stringToChord(chord: string): Chord | null {
     (Array.isArray(finger.string) && currentBarreFret === finger.fret && currentBarre[0] === finger.string[0]);
   }).map((finger, index) => ({...finger, index: index + 1}))
 
+  const position = Math.min(...fingers.map((finger) => finger.fret));
+
   const chordObject: Chord = {
     fingers: filteredFingers,
-    position: Math.min(...fingers.map((finger) => finger.fret)),
+    position: position === 1 ? 0 : position,
     mutedStrings,
     openStrings,
   };
