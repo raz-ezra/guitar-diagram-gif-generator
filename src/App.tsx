@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import styled from "@emotion/styled";
 import ConfigurationPanel from "./components/ConfigurationPanel";
-import MainChord from './components/MainChord';
-import {defaultParams, ChordDiagramParams} from "./ChordDiagram"
+import MainChord from "./components/MainChord";
+import { defaultParams, ChordDiagramParams } from "./ChordDiagram";
+import { BaseNote, ChordType } from "./utils/Chords2";
 
 const Main = styled.div`
   display: flex;
@@ -11,23 +12,22 @@ const Main = styled.div`
   overflow: hidden;
 `;
 
-function App() {
+export type Chords = { note: BaseNote | null; type: ChordType | null }[];
 
-    const [chords, setChords] = useState<any[]>([{note: "", type: ""}]);
-    const [diagramConfiguration, setDiagramConfiguration] = useState<ChordDiagramParams>({...defaultParams, debugMode: true})
+function App() {
+  const [chords, setChords] = useState<Chords>([{ note: null, type: null }]);
+  const [diagramConfiguration, setDiagramConfiguration] =
+    useState<ChordDiagramParams>({ ...defaultParams, debugMode: true });
 
   return (
     <Main>
-        <ConfigurationPanel
-            chords={chords}
-            setChords={setChords}
-            diagramConfiguration={diagramConfiguration}
-            setDiagramConfiguration={setDiagramConfiguration}
-        />
-        <MainChord
-            diagramConfiguration={diagramConfiguration}
-            chords={chords}
-        />
+      <ConfigurationPanel
+        chords={chords}
+        setChords={setChords}
+        diagramConfiguration={diagramConfiguration}
+        setDiagramConfiguration={setDiagramConfiguration}
+      />
+      <MainChord diagramConfiguration={diagramConfiguration} chords={chords} />
     </Main>
   );
 }

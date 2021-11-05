@@ -15,6 +15,9 @@
     "@types/node": "^12.20.36",
     "@types/react": "^17.0.33",
     "@types/react-dom": "^17.0.10",
+    "husky": "^7.0.4",
+    "lint-staged": "^11.2.6",
+    "prettier": "^2.4.1",
     "react": "^17.0.2",
     "react-color": "^2.19.3",
     "react-dom": "^17.0.2",
@@ -35,6 +38,16 @@
       "react-app",
       "react-app/jest"
     ]
+  },
+  "lint-staged": {
+     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+       "prettier --write"
+     ]
+   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "browserslist": {
     "production": [
