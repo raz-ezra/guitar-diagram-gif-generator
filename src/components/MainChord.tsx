@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
-import { ChordDiagram, ChordDiagramParams } from "../ChordDiagram";
-import Chords2 from "../utils/Chords2";
+import { ChordDiagram, ChordDiagramParams, stringToChord } from "../ChordDiagram";
 import Button from "@mui/material/Button";
-import { Chords } from "../App";
 
 const MainChordWrapper = styled.div`
   height: 100%;
@@ -29,7 +27,7 @@ const ChordDiagramWrapper = styled.div<{ debugMode: boolean | undefined }>`
 
 type MainChordProps = {
   diagramConfiguration: ChordDiagramParams;
-  chords: Chords;
+  chords: string[];
 };
 
 function MainChord(props: MainChordProps) {
@@ -52,21 +50,16 @@ function MainChord(props: MainChordProps) {
   }, [props.diagramConfiguration]);
 
   useEffect(() => {
-    if (
-      chordDiagram.current &&
-      !!props.chords[currentChord].note &&
-      !!props.chords[currentChord].type
-    ) {
-      const title =
-        props.chords[currentChord].note! + props.chords[currentChord].type!;
-      chordDiagram.current.drawChord(
-        Chords2[props.chords[currentChord].note!][
-          props.chords[currentChord].type!
-        ] as ch,
-        title,
-        true
-      );
+    if (chordDiagram.current !== null) {
+      const chord = props.chords[currentChord];
+      const chordModel = stringToChord(chord);
+      if (chordModel) {
+        chordDiagram.current.drawChord(chordModel, chord, true);
+      } else {
+        // TODO - Show the user that the chord is invalid
+      }
     }
+
   }, [props.chords[currentChord]]);
 
   const handleMoveChord = (direction: number) => {

@@ -3,7 +3,9 @@ import styled from "@emotion/styled";
 import ConfigurationPanel from "./components/ConfigurationPanel";
 import MainChord from "./components/MainChord";
 import { defaultParams, ChordDiagramParams } from "./ChordDiagram";
-import { BaseNote, ChordType } from "./utils/Chords2";
+import { ChordsInput } from "./components/ChordsInput";
+import { parseChords } from "./parser/parseChords";
+import camelCase from "camelcase";
 
 const Main = styled.div`
   display: flex;
@@ -12,12 +14,18 @@ const Main = styled.div`
   overflow: hidden;
 `;
 
-export type Chords = { note: BaseNote | null; type: ChordType | null }[];
-
 function App() {
-  const [chords, setChords] = useState<Chords>([{ note: null, type: null }]);
+  const [chords, setChords] = useState<string[]>(["C"]);
+  const [chordsText, setChordsText] = useState<string>("C");
+
+  try {
+    const chordsFromText = parseChords("|" + chordsText + "|");
+    chordsFromText.map((c: string) => camelCase(c, { pascalCase: true }));
+  } catch (error: any) {
+    console.error(`can't parse chords`);
+  }
   const [diagramConfiguration, setDiagramConfiguration] =
-    useState<ChordDiagramParams>({ ...defaultParams, debugMode: true });
+    useState<ChordDiagramParams>({ ...defaultParams, debugMode: false });
 
   return (
     <Main>
@@ -27,7 +35,13 @@ function App() {
         diagramConfiguration={diagramConfiguration}
         setDiagramConfiguration={setDiagramConfiguration}
       />
-      <MainChord diagramConfiguration={diagramConfiguration} chords={chords} />
+      <div>
+        <ChordsInput chordsText={chordsText} setChordsText={setChordsText}/>
+        <MainChord
+          diagramConfiguration={diagramConfiguration}
+          chords={chords}
+        />
+      </div>
     </Main>
   );
 }

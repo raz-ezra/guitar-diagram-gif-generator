@@ -4,8 +4,8 @@ type Fingers = Finger[];
 
 export type Finger = {
   index: number;
-  string: number;
-  fret: number | [number, number];
+  string: number | [number, number];
+  fret: number;
 };
 
 export type Chord = {
@@ -162,10 +162,10 @@ const Chords2: ChordsMap = {
   F: {
     Major: {
       fingers: [
-        { index: 1, string: 2, fret: 1 },
-        { index: 2, string: 3, fret: 3 },
-        { index: 3, string: 5, fret: 4 },
-        { index: 4, string: 4, fret: 4 },
+        { index: 1, string: [2,1], fret: 1 },
+        { index: 2, string: 3, fret: 2},
+        { index: 3, string: 5, fret: 3 },
+        { index: 4, string: 4, fret: 3 },
       ],
       openStrings: [],
       mutedStrings: [],
@@ -175,7 +175,7 @@ const Chords2: ChordsMap = {
   "F#": {
     Major: {
       fingers: [
-        { index: 1, string: 6, fret: 2 },
+        { index: 1, string: [6,1], fret: 2 },
         { index: 2, string: 3, fret: 3 },
         { index: 3, string: 5, fret: 4 },
         { index: 4, string: 4, fret: 4 },

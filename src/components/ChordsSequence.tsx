@@ -18,19 +18,19 @@ const ButtonWrapper = styled.div`
 `;
 
 type ConfigurationPanelProps = {
-  chords: any[];
-  setChords: (chords: any[]) => void;
+  chords: string[];
+  setChords: (chords: string[]) => void;
 };
 
 function ChordsSequence(props: ConfigurationPanelProps) {
-  const handleChange = (chord: any, index: number) => {
+  const handleChange = (chord: string, index: number) => {
     const newChords = [...props.chords];
     newChords[index] = chord;
     props.setChords(newChords);
   };
 
   const addChord = () => {
-    props.setChords([...props.chords, { note: "", type: "" }]);
+    props.setChords([...props.chords, ""]);
   };
 
   const removeChord = (index: number) => {
@@ -45,8 +45,7 @@ function ChordsSequence(props: ConfigurationPanelProps) {
         <ChordConfiguration
           key={index}
           index={index}
-          note={chord.note}
-          type={chord.type}
+          chord={chord}
           onChange={handleChange}
           removeChord={removeChord}
         />

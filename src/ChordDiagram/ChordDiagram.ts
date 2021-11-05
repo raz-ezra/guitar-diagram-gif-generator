@@ -29,6 +29,7 @@ export type ChordDiagramParams = {
   fontWeight?: string;
   debugMode?: boolean;
   animationDuration?: number;
+  forcePosition?: number
 };
 
 export const defaultParams: ChordDiagramParams = {
@@ -41,13 +42,14 @@ export const defaultParams: ChordDiagramParams = {
   showTuning: true,
   showFretsLabels: false,
   showBridgeLabel: false,
-  showFingerLabels: true,
+  showFingerLabels: false,
   showOpenStringsLabels: false,
   tuning: ["E", "A", "D", "G", "B", "E"],
   defaultColor: "#666666",
   fingersLabelColor: "#ffffff",
   backgroundColor: "#ffffff",
   animationDuration: 500,
+  forcePosition: 0
 };
 
 type TextAttributes = {
@@ -64,6 +66,7 @@ export class ChordDiagram {
   private params: ChordDiagramParams = defaultParams;
   private elements: any = {};
   private calcedParams: any = {};
+  private currentTitle: number = 1;
 
   constructor(selector: string, params: Partial<ChordDiagramParams> = {}) {
     this.params = {
@@ -184,9 +187,11 @@ export class ChordDiagram {
       fretLabels: baseDiagram.group().attr({ id: "fretLabels" }),
       fretLabelsCover: baseDiagram.group().attr({ id: "fretLabelsCover" }),
       stringsLabels: baseDiagram.group().attr({ id: "stringsLabels" }),
+      barres: baseDiagram.group().attr({ id: "barres" }),
       fingers: baseDiagram.group().attr({ id: "fingers" }),
       stringMarkings: baseDiagram.group().attr({ id: "stringMarkings" }),
-      chordTitle: baseDiagram.group().attr({ id: "stringMarkings" }),
+      chordTitle1: baseDiagram.group().attr({ id: "chordTitle1" }),
+      chordTitle2: baseDiagram.group().attr({ id: "chordTitle2" }),
     };
 
     const coverTopGradient = this.draw
@@ -417,14 +422,36 @@ export class ChordDiagram {
 
     // fingers with labels
     this.elements.fingers = [];
+    this.elements.barres = []
     for (let i = 1; i < 5; i += 1) {
+      const [fingerBasePositionX, fingerBasePositionY] =
+      this.getFingerBasePosition(i);
+
+      const barreLayerName = "barre" + i;
+        this.elements.layers[barreLayerName] = this.elements.layers.barres
+        .group()
+        .attr({ id: barreLayerName })
+        .opacity(0);
+      this.elements.barres[i] = {
+        node: this.drawLine(
+          this.elements.layers[barreLayerName],
+          fingerBasePositionX + this.calcedParams.stringSpacing / 4,
+          fingerBasePositionY + this.calcedParams.fretSpacing / 4,
+          fingerBasePositionX + this.calcedParams.stringSpacing / 4,
+          fingerBasePositionY + this.calcedParams.fretSpacing / 4
+        ).stroke({
+          width: this.calcedParams.fretSpacing / 2,
+          color: this.params.fingersColor || this.params.defaultColor,
+          linecap: 'round'
+        }),
+        label: null,
+      };
+
       const fingerLayerName = "finger" + i;
       this.elements.layers[fingerLayerName] = this.elements.layers.fingers
         .group()
         .attr({ id: fingerLayerName })
         .opacity(0);
-      const [fingerBasePositionX, fingerBasePositionY] =
-        this.getFingerBasePosition(i);
       this.elements.fingers[i] = {
         node: this.drawCircle(
           this.elements.layers[fingerLayerName],
@@ -453,7 +480,7 @@ export class ChordDiagram {
     for (let i = 1; i <= this.params.numOfStrings; i += 1) {
       const openStringMarkingLayerName = "openStringMarking" + i;
       this.elements.layers[openStringMarkingLayerName] =
-        this.elements.layers.fingers
+        this.elements.layers.stringMarkings
           .group()
           .attr({ id: openStringMarkingLayerName })
           .opacity(0);
@@ -539,17 +566,23 @@ export class ChordDiagram {
 
   getFingerChordPosition(chordPosition: number, finger: Finger) {
     const { string, fret } = finger;
-    const actualFret = Array.isArray(fret) ? fret[0] : fret;
+    
+    const actualString = Array.isArray(string) ? string[0] : string;
     const fretsToAdd = chordPosition === 0 ? 0 : 1;
+    const forcePositionAdd = this.params.forcePosition || this.params.forcePosition === 0 ? fretsToAdd - this.params.forcePosition! : 0;
     const moveToX =
       this.calcedParams.origin.x +
-      (this.params.numOfStrings - string - 0.25) *
+      (this.params.numOfStrings - actualString - 0.25) *
         this.calcedParams.stringSpacing;
     const moveToY =
       this.calcedParams.origin.y +
-      (actualFret - chordPosition + fretsToAdd - 0.75) *
+      (fret - chordPosition + fretsToAdd + forcePositionAdd - 0.75) *
         this.calcedParams.fretSpacing;
-    return [moveToX, moveToY];
+    let barreLength;
+    if (Array.isArray(string) && string[1]) {
+      barreLength = this.calcedParams.stringSpacing * (string[0] - string[1]) + this.calcedParams.stringSpacing / 4
+    }
+    return [moveToX, moveToY, barreLength];
   }
 
   moveDiagramToFret(fretNumber: number, animate?: boolean) {
@@ -590,30 +623,65 @@ export class ChordDiagram {
   }
 
   drawChord(chord: Chord, title: string, animate?: boolean) {
-    this.moveDiagramToFret(chord.position, animate);
+    if (this.params.forcePosition === undefined || isNaN(this.params.forcePosition)) {
+      this.moveDiagramToFret(chord.position, animate);
+    };
+
     for (let i = 1; i < 5; i++) {
       const finger = chord.fingers.find((finger: Finger) => finger.index === i);
       if (finger) {
+        const [x,y, barreLength] = this.getFingerChordPosition(chord.position, finger)
         if (animate) {
           this.elements.layers["finger" + i]
             .animate(this.calcedParams.animationDuration)
-            .move(...this.getFingerChordPosition(chord.position, finger))
+            .move(x,y)
             .opacity(1);
+            if (barreLength) {
+              this.elements.layers["barre" + i]
+              .animate(this.calcedParams.animationDuration)
+              .move(x + this.calcedParams.stringSpacing / 4, y + this.calcedParams.fretSpacing / 4)
+              .opacity(1);
+              this.elements.barres[i].node
+              .animate(this.calcedParams.animationDuration)
+              .attr({x1: x + barreLength})
+            } else {
+              this.elements.layers["barre" + i]
+              .animate(this.calcedParams.animationDuration)
+              .move(x, y + this.calcedParams.fretSpacing / 4)
+              .opacity(1);
+              this.elements.barres[i].node
+              .animate(this.calcedParams.animationDuration)
+              .attr({x1: x + this.calcedParams.fretSpacing / 4, x2: x + this.calcedParams.fretSpacing / 4})
+            }
         } else {
           this.elements.layers["finger" + i]
-            .move(...this.getFingerChordPosition(chord.position, finger))
+            .move(x,y)
             .opacity(1);
+          if (barreLength) {
+            this.elements.layers["barre" + i]
+            .move(x + this.calcedParams.stringSpacing / 4, y + this.calcedParams.fretSpacing / 4)
+            .opacity(1);
+            this.elements.barres[i].node.attr({x1: x + barreLength})
+          }
         }
       } else {
+        const [x, y] = this.getFingerBasePosition(i)
         if (animate) {
           this.elements.layers["finger" + i]
             .animate(this.calcedParams.animationDuration)
-            .move(...this.getFingerBasePosition(i))
+            .move(x,y)
             .opacity(0);
+            this.elements.layers["barre" + i]
+              .animate(this.calcedParams.animationDuration)
+              .move(x + this.calcedParams.stringSpacing /4 ,y + this.calcedParams.fretSpacing /4 )
+              .opacity(0);
         } else {
           this.elements.layers["finger" + i]
-            .move(...this.getFingerBasePosition(i))
+            .move(x,y)
             .opacity(0);
+            this.elements.layers["barre" + i]
+            .move(x + this.calcedParams.stringSpacing /4 ,y + this.calcedParams.fretSpacing /4 )
+              .opacity(0);
         }
       }
     }
@@ -684,33 +752,42 @@ export class ChordDiagram {
       }
     }
 
-    if (!this.elements.currentChordTitle) {
-      this.drawChordTitle(title, animate);
-    } else {
-      this.elements.currentChordTitle.x(0);
-      this.drawChordTitle(title, animate);
-    }
+
+      this.moveOldTitle(this.currentTitle);
+      this.currentTitle = this.currentTitle % 2 + 1;
+      this.drawChordTitle(title, this.currentTitle, animate);
   }
 
-  drawChordTitle(title: string, animate?: boolean) {
+  moveOldTitle(chordTitleNumber: number, animate?: boolean) {
+    this.elements.layers["chordTitle" + chordTitleNumber].animate(this.calcedParams.animationDuration / 2).x(-this.calcedParams.width / 4).opacity(0);
+    setTimeout(() => {
+      this.elements.layers["chordTitle" + chordTitleNumber].clear();
+      this.elements.layers["chordTitle" + chordTitleNumber].opacity(1).x(0).clear();
+    }, this.calcedParams.animationDuration / 2)
+  }
+
+  drawChordTitle(title: string, chordTitleNumber: number, animate?: boolean) {
     if (animate) {
-      this.elements.currentChordTitle = this.drawText(
-        this.elements.layers.chordTitle,
-        this.params.width,
-        this.calcedParams.origin.y / 5,
-        title,
-        this.params.defaultColor,
-        {
-          size: this.calcedParams.fontSize * 3,
-        }
-      )
-        .attr({ opacity: 0 })
-        .animate(this.calcedParams.animationDuration / 2)
-        .x(this.params.width / 2 - this.calcedParams.fontSize)
-        .attr({ opacity: 1 });
+        this.elements["chordTitle" + chordTitleNumber] = this.drawText(
+          this.elements.layers["chordTitle" + chordTitleNumber],
+          this.params.width,
+          this.calcedParams.origin.y / 5,
+          title,
+          this.params.defaultColor,
+          {
+            size: this.calcedParams.fontSize * 3,
+          }
+        )
+          .attr({ opacity: 0 })
+
+        this.elements["chordTitle" + chordTitleNumber]   
+          .animate(this.calcedParams.animationDuration / 2)
+          .x(this.params.width / 2)
+          .attr({ opacity: 1 });
+      
     } else {
-      this.elements.currentChordTitle = this.drawText(
-        this.elements.layers.chordTitle,
+      this.elements["chordTitle" + chordTitleNumber] = this.drawText(
+        this.elements.layers["chordTitle" + chordTitleNumber],
         this.params.width / 2,
         this.calcedParams.origin.y / 5,
         title,

@@ -127,6 +127,14 @@ function DiagramConfiguration({
             handleNumberChange(parseInt(e.target.value), "animationDuration")
           }
         />
+        <TextField
+          label="Force Start Position"
+          variant="standard"
+          defaultValue={diagramConfiguration.forcePosition}
+          onBlur={(e) =>
+            handleNumberChange(parseInt(e.target.value), "forcePosition")
+          }
+        />
       </Row>
       <Row>
         <FormControlLabel
