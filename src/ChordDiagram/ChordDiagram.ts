@@ -556,7 +556,7 @@ export class ChordDiagram {
         .fill(this.params.backgroundColor)
     };
 
-    this.moveDiagramToFret(this.params.forcePosition || 0);
+    this.moveDiagramToFret(this.params.forcePosition || 1);
 
     this.params.debugMode && this.printParams();
   }
@@ -595,7 +595,6 @@ export class ChordDiagram {
     const chordPositionAdd = chordPosition <= 1 ? 0 : -chordPosition + 1;
     const forcePositionAdd = this.params.forcePosition! <= 1 ? 0 :  -this.params.forcePosition! + 1;
     const finalAdd = isForcePositionExists ? forcePositionAdd : chordPositionAdd;
-    console.log(finalAdd);
     const moveToX =
       this.calcedParams.origin.x +
         ((this.params.numOfStrings - actualString - (1.25 / this.params.numOfFrets)) *
@@ -608,12 +607,6 @@ export class ChordDiagram {
     if (Array.isArray(string) && string[1]) {
       barreLength = this.calcedParams.stringSpacing * (string[0] - string[1]) + this.calcedParams.stringSpacing / 4
     }
-    // console.log("CP:"+chordPosition)
-    // console.log("STR:"+string)
-    // console.log("FP:"+fretPosition)
-    // console.log("IFP:"+isForcePositionExists)
-    // console.log("FPA:"+forcePositionAdd)
-    // console.log("FA:"+finalAdd)
     return [moveToX, moveToY, barreLength];
   }
 
@@ -656,7 +649,6 @@ export class ChordDiagram {
   }
 
   drawChord(chord: Chord, animate?: boolean) {
-    console.log(chord);
     if (this.params.forcePosition === undefined || isNaN(this.params.forcePosition)) {
       this.moveDiagramToFret(chord.startFret, animate);
     }

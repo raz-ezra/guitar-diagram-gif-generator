@@ -118,7 +118,7 @@ function DiagramConfiguration({
         <TextField
           label="Start Position"
           variant="standard"
-          defaultValue={diagramConfiguration.forcePosition}
+          defaultValue={!diagramConfiguration.forcePosition && diagramConfiguration.forcePosition !== 0 ? "" : diagramConfiguration.forcePosition}
           onBlur={(e) =>
             handleNumberChange(parseInt(e.target.value), "forcePosition")
           }

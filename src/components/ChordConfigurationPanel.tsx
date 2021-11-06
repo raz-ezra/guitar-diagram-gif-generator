@@ -65,6 +65,7 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
         width="50px"
         options={config.availablePositions}
         value={config.selectedPosition}
+        getOptionLabel={(option: any) => option.toString()}
         renderInput={(params) => (
           <TextField {...params} label="Position" variant="standard" />
         )}
