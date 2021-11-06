@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/guitar-diagram-gif-generator/static/css/main.4a4137e4.chunk.css",
-    "main.js": "/guitar-diagram-gif-generator/static/js/main.999fc9a8.chunk.js",
-    "main.js.map": "/guitar-diagram-gif-generator/static/js/main.999fc9a8.chunk.js.map",
+    "main.js": "/guitar-diagram-gif-generator/static/js/main.fe02b2f6.chunk.js",
+    "main.js.map": "/guitar-diagram-gif-generator/static/js/main.fe02b2f6.chunk.js.map",
     "runtime-main.js": "/guitar-diagram-gif-generator/static/js/runtime-main.427afa38.js",
     "runtime-main.js.map": "/guitar-diagram-gif-generator/static/js/runtime-main.427afa38.js.map",
     "static/css/2.6bd0b7a0.chunk.css": "/guitar-diagram-gif-generator/static/css/2.6bd0b7a0.chunk.css",
@@ -24,6 +24,6 @@
     "static/css/2.6bd0b7a0.chunk.css",
     "static/js/2.89a18c6d.chunk.js",
     "static/css/main.4a4137e4.chunk.css",
-    "static/js/main.999fc9a8.chunk.js"
+    "static/js/main.fe02b2f6.chunk.js"
   ]
 }
