@@ -1,6 +1,6 @@
 //@ts-ignore;
 import { findGuitarChord } from "chord-fingering";
-import { Finger, Chord } from "../utils/Chords2";
+import { Finger, Chord } from "./types";
 
 type Position = {
   fret: number;
@@ -25,9 +25,40 @@ const sortFingers = (fingerA: Finger, fingerB: Finger): number => {
   return fingerA.fret === fingerB.fret ? fingerBString - fingerAString : fingerA.fret - fingerB.fret;
 };
 
-export function stringToChord(chord: string): Chord | null {
-  const chordFingerings = findGuitarChord(chord);
-  if (!chordFingerings) return null;
+export const getEmptyChordObject = (title: string = ""): Chord => ({
+  title,
+  fingers: [],
+  startPosition: 0,
+  mutedStrings: [],
+  openStrings: [],
+});
+
+export const getEmptyChordConfigiration = (title: string = ""): ChordConfiguration => ({
+  string: title,
+  availablePositions: [],
+  selectedPosition: null,
+  chord: getEmptyChordObject(title)
+});
+
+export type ChordConfiguration = {
+  string: string,
+  availablePositions: number[],
+  selectedPosition: number | null,
+  chord: Chord
+}
+
+export function chordToString(chord: Chord): string {
+  let string = "";
+
+  string += chord.title;
+
+  return string;
+}
+
+
+export function stringToChord(chordTitle: string): ChordConfiguration {
+  const chordFingerings = findGuitarChord(chordTitle);
+  if (!chordFingerings) return getEmptyChordConfigiration(chordTitle);
 
   const { positions, barre }: Fingering = chordFingerings.fingerings[0];
   const openStrings: number[] = [];
@@ -68,14 +99,26 @@ export function stringToChord(chord: string): Chord | null {
   .sort(sortFingers)
   .map((finger, index) => ({...finger, index: index + 1}))
 
-  const position = Math.min(...fingers.map((finger) => finger.fret));
+  const startPosition = Math.min(...fingers.map((finger) => finger.fret));
 
   const chordObject: Chord = {
+    title: chordTitle,
     fingers: filteredFingers,
-    position: position === 1 ? 0 : position,
+    startPosition: startPosition === 1 ? 0 : startPosition,
     mutedStrings,
     openStrings,
   };
 
-  return chordObject;
+  return {
+    string: chordTitle,
+    availablePositions: chordFingerings.fingerings.map((_: any, index: number) => index + 1),
+    selectedPosition: 1,
+    chord: chordObject
+  }
+}
+
+export function arrayToChords(chords: string[]): ChordConfiguration[] {
+  return chords.map(chord => {
+      return stringToChord(chord);
+  })
 }

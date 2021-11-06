@@ -1,5 +1,5 @@
 import { SVG, Svg, G, Gradient } from "@svgdotjs/svg.js";
-import { Chord, Finger } from "../utils/Chords2";
+import { Chord, Finger } from "./types";
 
 export type ChordDiagramParams = {
   width: number;
@@ -637,16 +637,16 @@ export class ChordDiagram {
     }
   }
 
-  drawChord(chord: Chord, title: string, animate?: boolean) {
+  drawChord(chord: Chord, animate?: boolean) {
     console.log(chord);
     if (this.params.forcePosition === undefined || isNaN(this.params.forcePosition)) {
-      this.moveDiagramToFret(chord.position, animate);
+      this.moveDiagramToFret(chord.startPosition, animate);
     };
 
     for (let i = 1; i < 5; i++) {
       const finger = chord.fingers.find((finger: Finger) => finger.index === i);
       if (finger) {
-        const [x,y, barreLength] = this.getFingerChordPosition(chord.position, finger)
+        const [x,y, barreLength] = this.getFingerChordPosition(chord.startPosition, finger)
         if (animate) {
           this.elements.layers["finger" + i]
             .animate(this.calcedParams.animationDuration)
@@ -771,7 +771,7 @@ export class ChordDiagram {
 
       this.moveOldTitle(this.currentTitle);
       this.currentTitle = this.currentTitle % 2 + 1;
-      this.drawChordTitle(title, this.currentTitle, animate);
+      this.drawChordTitle(chord.title, this.currentTitle, animate);
   }
 
   moveOldTitle(chordTitleNumber: number, animate?: boolean) {

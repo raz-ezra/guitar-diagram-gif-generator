@@ -81,8 +81,6 @@ function DiagramConfiguration({
           defaultValue={diagramConfiguration.height}
           onBlur={(e) => handleNumberChange(parseInt(e.target.value), "height")}
         />
-      </Row>
-      <Row>
         <TextField
           label="# of Strings"
           variant="standard"
@@ -117,22 +115,20 @@ function DiagramConfiguration({
             handleNumberChange(parseInt(e.target.value), "fretsWidth")
           }
         />
-      </Row>
-      <Row>
         <TextField
-          label="Animation Duration"
-          variant="standard"
-          defaultValue={diagramConfiguration.animationDuration}
-          onBlur={(e) =>
-            handleNumberChange(parseInt(e.target.value), "animationDuration")
-          }
-        />
-        <TextField
-          label="Force Start Position"
+          label="Start Position"
           variant="standard"
           defaultValue={diagramConfiguration.forcePosition}
           onBlur={(e) =>
             handleNumberChange(parseInt(e.target.value), "forcePosition")
+          }
+        />
+        <TextField
+          label="Anim. Duration"
+          variant="standard"
+          defaultValue={diagramConfiguration.animationDuration}
+          onBlur={(e) =>
+            handleNumberChange(parseInt(e.target.value), "animationDuration")
           }
         />
       </Row>

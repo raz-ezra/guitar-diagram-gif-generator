@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
-import { ChordDiagram, ChordDiagramParams, stringToChord } from "../ChordDiagram";
+import { Chord, ChordDiagram, ChordDiagramParams, stringToChord } from "../ChordDiagram";
 import Button from "@mui/material/Button";
 
 const MainChordWrapper = styled.div`
@@ -27,7 +27,7 @@ const ChordDiagramWrapper = styled.div<{ debugMode: boolean | undefined }>`
 
 type MainChordProps = {
   diagramConfiguration: ChordDiagramParams;
-  chords: string[];
+  chords: Chord[];
 };
 
 function MainChord(props: MainChordProps) {
@@ -53,9 +53,8 @@ function MainChord(props: MainChordProps) {
 
   useEffect(() => {
     if (chordDiagram.current !== null) {
-      const chordModel = stringToChord(chord);
-      if (chordModel) {
-        chordDiagram.current.drawChord(chordModel, chord, true);
+      if (chord) {
+        chordDiagram.current.drawChord(chord, true);
       } else {
         // TODO - Show the user that the chord is invalid
       }

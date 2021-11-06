@@ -1,7 +1,8 @@
 import React, { ChangeEvent } from "react";
 import styled from "@emotion/styled";
-import ChordConfiguration from "./ChordConfiguration";
+import ChordConfigurationPanel from "./ChordConfigurationPanel";
 import TextField from "@mui/material/TextField";
+import { arrayToChords, Chord, ChordConfiguration, getEmptyChordConfigiration, getEmptyChordObject } from "../ChordDiagram";
 
 const StyledButton = styled.button`
   padding: 5px;
@@ -29,29 +30,30 @@ const StyledTextField = styled(TextField)`
 `;
 
 type ConfigurationPanelProps = {
-  chords: string[];
-  setChords: (chords: string[]) => void;
+  chordsConfigurations: ChordConfiguration[];
+  setChordsConfigurations: (chords: ChordConfiguration[]) => void;
 };
 
 function ChordsSequence(props: ConfigurationPanelProps) {
-  const handleChange = (chord: string, index: number) => {
-    const newChords = [...props.chords];
+  const handleChange = (chord: ChordConfiguration, index: number) => {
+    const newChords = [...props.chordsConfigurations];
     newChords[index] = chord;
-    props.setChords(newChords);
+    props.setChordsConfigurations(newChords);
   };
 
   const addChord = () => {
-    props.setChords([...props.chords, ""]);
+    props.setChordsConfigurations([...props.chordsConfigurations, getEmptyChordConfigiration()]);
   };
 
   const removeChord = (index: number) => {
-    const newChords = [...props.chords];
+    const newChords = [...props.chordsConfigurations];
     newChords.splice(index, 1);
-    props.setChords(newChords);
+    props.setChordsConfigurations(newChords);
   };
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
-    props.setChords(e.target.value === "" ? [""] : e.target.value.split(" "));
+    const chordArray = e.target.value === "" ? [""] : e.target.value.replace("\n", " ").split(" ");
+    props.setChordsConfigurations(arrayToChords(chordArray));
 }
 
   return (
@@ -59,15 +61,16 @@ function ChordsSequence(props: ConfigurationPanelProps) {
       <InputWrapper>
         <StyledTextField
           label={"Chord Sequence Text Input"}
-          value={props.chords.join(" ")}
+          value={props.chordsConfigurations.map(config => config.chord.title).join(" ")}
           onChange={handleTextChange}
+          multiline
         />
       </InputWrapper>
-      {props.chords.map((chord, index) => (
-        <ChordConfiguration
-          key={`${index}_${chord}`}
+      {props.chordsConfigurations.map((config, index) => (
+        <ChordConfigurationPanel
+          key={index}
           index={index}
-          chord={chord}
+          chordConfiguration={config}
           onChange={handleChange}
           removeChord={removeChord}
         />
