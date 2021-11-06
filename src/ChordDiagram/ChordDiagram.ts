@@ -544,7 +544,7 @@ export class ChordDiagram {
         .fill(this.params.backgroundColor)
     };
 
-    this.moveDiagramToFret(0);
+    this.moveDiagramToFret(this.params.forcePosition || 0);
 
     this.params.debugMode && this.printParams();
   }
@@ -578,32 +578,38 @@ export class ChordDiagram {
 
   getFingerChordPosition(chordPosition: number, finger: Finger) {
     const { string, fret } = finger;
-    
     const actualString = Array.isArray(string) ? string[0] : string;
-    const fretsToAdd = chordPosition <= 1 ? 0 : 1;
     const isForcePositionExists = this.params.forcePosition !== undefined && !isNaN(this.params.forcePosition);
-    const forcePositionAdd = isForcePositionExists ? fretsToAdd - this.params.forcePosition! : 0;
-    const finalAdd = fretsToAdd + forcePositionAdd;
+    const chordPositionAdd = chordPosition <= 1 ? 0 : -chordPosition + 1;
+    const forcePositionAdd = this.params.forcePosition! <= 1 ? 0 :  -this.params.forcePosition! + 1;
+    const finalAdd = isForcePositionExists ? forcePositionAdd : chordPositionAdd;
+    console.log(finalAdd);
     const moveToX =
       this.calcedParams.origin.x +
-      (this.params.numOfStrings - actualString - 0.25) *
-        this.calcedParams.stringSpacing;
+        ((this.params.numOfStrings - actualString - (1.25 / this.params.numOfFrets)) *
+        this.calcedParams.stringSpacing);
     const moveToY =
       this.calcedParams.origin.y +
-      (fret - chordPosition + finalAdd - 0.75) *
-        this.calcedParams.fretSpacing;
+        ((fret + finalAdd - 0.75) *
+        this.calcedParams.fretSpacing);
     let barreLength;
     if (Array.isArray(string) && string[1]) {
       barreLength = this.calcedParams.stringSpacing * (string[0] - string[1]) + this.calcedParams.stringSpacing / 4
     }
+    // console.log("CP:"+chordPosition)
+    // console.log("STR:"+string)
+    // console.log("FP:"+fretPosition)
+    // console.log("IFP:"+isForcePositionExists)
+    // console.log("FPA:"+forcePositionAdd)
+    // console.log("FA:"+finalAdd)
     return [moveToX, moveToY, barreLength];
   }
 
   moveDiagramToFret(fretNumber: number, animate?: boolean) {
     const maxStartFret = 25 - this.params.numOfFrets;
-    const topFretLine = fretNumber <= 1 ? 0 : fretNumber;
-    if (topFretLine > maxStartFret) {
-      console.error(`Max fret allowed as start position is ${maxStartFret}`);
+    const topFretLine = fretNumber - 1;
+    if (topFretLine > maxStartFret || topFretLine < 0) {
+      console.error(`Fret number should be between 1 to ${maxStartFret}`);
       return;
     }
 
@@ -640,13 +646,13 @@ export class ChordDiagram {
   drawChord(chord: Chord, animate?: boolean) {
     console.log(chord);
     if (this.params.forcePosition === undefined || isNaN(this.params.forcePosition)) {
-      this.moveDiagramToFret(chord.startPosition, animate);
-    };
+      this.moveDiagramToFret(chord.startFret, animate);
+    }
 
     for (let i = 1; i < 5; i++) {
       const finger = chord.fingers.find((finger: Finger) => finger.index === i);
       if (finger) {
-        const [x,y, barreLength] = this.getFingerChordPosition(chord.startPosition, finger)
+        const [x,y, barreLength] = this.getFingerChordPosition(chord.startFret, finger)
         if (animate) {
           this.elements.layers["finger" + i]
             .animate(this.calcedParams.animationDuration)
@@ -775,7 +781,12 @@ export class ChordDiagram {
   }
 
   moveOldTitle(chordTitleNumber: number, animate?: boolean) {
-    this.elements.layers["chordTitle" + chordTitleNumber].animate(this.calcedParams.animationDuration / 2).x(-this.calcedParams.width / 4).opacity(0);
+    if (animate) {
+      this.elements.layers["chordTitle" + chordTitleNumber].animate(this.calcedParams.animationDuration / 2).x(-this.calcedParams.width / 4).opacity(0);
+    }
+    else {
+      this.elements.layers["chordTitle" + chordTitleNumber].x(-this.calcedParams.width / 4).opacity(0);
+    }
     setTimeout(() => {
       this.elements.layers["chordTitle" + chordTitleNumber].opacity(1).x(0).clear();
     }, this.calcedParams.animationDuration / 2)

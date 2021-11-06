@@ -28,25 +28,10 @@ const sortFingers = (fingerA: Finger, fingerB: Finger): number => {
 export const getEmptyChordObject = (title: string = ""): Chord => ({
   title,
   fingers: [],
-  startPosition: 0,
+  startFret: 0,
   mutedStrings: [],
   openStrings: [],
 });
-
-export const getEmptyChordConfigiration = (title: string = ""): ChordConfiguration => ({
-  string: title,
-  availablePositions: [],
-  selectedPosition: null,
-  chord: getEmptyChordObject(title)
-});
-
-export type ChordConfiguration = {
-  string: string,
-  availablePositions: number[],
-  selectedPosition: number | null,
-  chord: Chord
-}
-
 export function chordToString(chord: Chord): string {
   let string = "";
 
@@ -56,20 +41,23 @@ export function chordToString(chord: Chord): string {
 }
 
 
-export function stringToChord(chordTitle: string): ChordConfiguration {
-  const chordFingerings = findGuitarChord(chordTitle);
-  if (!chordFingerings) return getEmptyChordConfigiration(chordTitle);
-
-  const { positions, barre }: Fingering = chordFingerings.fingerings[0];
+function getChordFromFingering(chordTitle: string, fingering: Fingering): Chord {
+  if (!fingering) return getEmptyChordObject(chordTitle);
+  // console.log(fingering);
+  const { positions, barre }: Fingering = fingering;
   const openStrings: number[] = [];
   const mutedStrings: number[] = [1, 2, 3, 4, 5, 6];
   const fingers: Finger[] = [];
   let currentBarre: [number, number] | null = null
   let currentBarreFret: number | null = null;
+  let startFret: number = 0;
 
   positions.reverse().forEach((position: Position) => {
     const { fret, stringIndex } = position;
-    
+    if (startFret === 0 || (fret !== 0 && startFret > fret)) {
+      startFret = fret;
+    }
+
     let string: Finger["string"] = 6 - stringIndex;
     if (barre && barre.fret === fret && !currentBarre) {
       currentBarreFret = barre.fret;
@@ -93,32 +81,54 @@ export function stringToChord(chordTitle: string): ChordConfiguration {
   });
 
   const filteredFingers: Finger[] = fingers.filter(finger => {
-    return !currentBarre || currentBarreFret !== finger.fret || 
-    (Array.isArray(finger.string) && currentBarreFret === finger.fret && currentBarre[0] === finger.string[0]);
+    return !currentBarre || currentBarreFret !== finger.fret ||
+        (Array.isArray(finger.string) && currentBarreFret === finger.fret && currentBarre[0] === finger.string[0]);
   })
-  .sort(sortFingers)
-  .map((finger, index) => ({...finger, index: index + 1}))
+      .sort(sortFingers)
+      .map((finger, index) => ({...finger, index: index + 1}))
 
-  const startPosition = Math.min(...fingers.map((finger) => finger.fret));
-
-  const chordObject: Chord = {
+  return {
     title: chordTitle,
     fingers: filteredFingers,
-    startPosition: startPosition === 1 ? 0 : startPosition,
+    startFret: startFret === 1000 ? 1 : startFret,
     mutedStrings,
     openStrings,
   };
+}
+
+export const getEmptyChordConfiguration = (title: string = ""): ConfigurableChord => ({
+  string: title,
+  title: title,
+  availablePositions: [],
+  selectedPosition: 1,
+  chords: []
+});
+
+export type ConfigurableChord = {
+  string: string,
+  title: string,
+  availablePositions: number[],
+  selectedPosition: number,
+  chords: Chord[]
+}
+
+export function stringToConfigurableChord(chordTitle: string): ConfigurableChord {
+  const chordFingerings = findGuitarChord(chordTitle);
+  if (!chordFingerings) return getEmptyChordConfiguration(chordTitle);
+
+  const chords = chordFingerings.fingerings.map((fingering: Fingering) => getChordFromFingering(chordTitle, fingering));
 
   return {
     string: chordTitle,
+    title: chordTitle,
     availablePositions: chordFingerings.fingerings.map((_: any, index: number) => index + 1),
     selectedPosition: 1,
-    chord: chordObject
+    chords: chords
   }
 }
 
-export function arrayToChords(chords: string[]): ChordConfiguration[] {
+export function arrayToConfigurableChords(chords: string[]): ConfigurableChord[] {
   return chords.map(chord => {
-      return stringToChord(chord);
+      return stringToConfigurableChord(chord);
   })
 }

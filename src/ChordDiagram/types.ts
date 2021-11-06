@@ -9,5 +9,5 @@ export type Chord = {
   fingers: Finger[];
   openStrings: number[];
   mutedStrings: number[];
-  startPosition: number;
+  startFret: number;
 };

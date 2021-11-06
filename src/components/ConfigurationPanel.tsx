@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import DiagramConfiguration from "./DiagramConfiguration";
 import ChordsSequence from "./ChordsSequence";
 import BasicTabs from "./layout/BasicTabs";
-import { ChordDiagramParams, ChordConfiguration } from "../ChordDiagram";
+import { ChordDiagramParams, ConfigurableChord } from "../ChordDiagram";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -11,8 +11,8 @@ const Wrapper = styled.div`
 `;
 
 type ConfigurationPanelProps = {
-  chords: ChordConfiguration[];
-  setChords: (chords: ChordConfiguration[]) => void;
+  chords: ConfigurableChord[];
+  setChords: (chords: ConfigurableChord[]) => void;
   diagramConfiguration: ChordDiagramParams;
   setDiagramConfiguration: (configuration: ChordDiagramParams) => void;
 };

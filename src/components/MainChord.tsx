@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
-import { Chord, ChordDiagram, ChordDiagramParams, stringToChord } from "../ChordDiagram";
+import { Chord, ChordDiagram, ChordDiagramParams } from "../ChordDiagram";
 import Button from "@mui/material/Button";
 
 const MainChordWrapper = styled.div`

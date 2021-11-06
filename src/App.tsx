@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "@emotion/styled";
 import ConfigurationPanel from "./components/ConfigurationPanel";
 import MainChord from "./components/MainChord";
-import { defaultParams, ChordDiagramParams, arrayToChords, ChordConfiguration } from "./ChordDiagram";
+import { defaultParams, ChordDiagramParams, arrayToConfigurableChords, ConfigurableChord } from "./ChordDiagram";
 import { parseChords } from "./parser/parseChords";
 import camelCase from "camelcase";
 
@@ -15,7 +15,7 @@ const Main = styled.div`
 `;
 
 function App() {
-  const [chords, setChords] = useState<ChordConfiguration[]>(arrayToChords(["C", "Cmaj7", "C7", "F", "F/E", "D", "G", "Amin", "A-maj7", "Am7", "A-6", "F", "Eb", "G", "C"]));
+  const [chords, setChords] = useState<ConfigurableChord[]>(arrayToConfigurableChords(["C", "Cmaj7", "C7", "F", "F/E", "D", "G", "Amin", "A-maj7", "Am7", "A-6", "F", "Eb", "G", "C"]));
 
   try {
     // TODO - use this
@@ -37,7 +37,7 @@ function App() {
       />
       <MainChord
         diagramConfiguration={diagramConfiguration}
-        chords={chords.map(chord => chord.chord)}
+        chords={chords.map(chord => chord.chords[chord.selectedPosition - 1])}
       />
     </Main>
   );

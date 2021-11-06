@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useState } from "react";
 import styled from "@emotion/styled";
 import TextField from "@mui/material/TextField";
-import { ChordConfiguration, stringToChord } from "../ChordDiagram";
+import { ConfigurableChord, stringToConfigurableChord } from "../ChordDiagram";
 import Autocomplete from "@mui/material/Autocomplete";
 
 const ChordConfigurationWrapper = styled.div`
@@ -38,16 +38,16 @@ const StyledAutoComplete = styled(Autocomplete)<{width: string}>`
 
 type ChordConfigurationProps = {
   index: number;
-  chordConfiguration: ChordConfiguration;
-  onChange: (chord: ChordConfiguration, index: number) => void;
+  chordConfiguration: ConfigurableChord;
+  onChange: (chord: ConfigurableChord, index: number) => void;
   removeChord: (index: number) => void;
 };
 
 function ChordConfigurationPanel(props: ChordConfigurationProps) {
-  const [config, setConfig] = useState<ChordConfiguration>(props.chordConfiguration);
+  const [config, setConfig] = useState<ConfigurableChord>(props.chordConfiguration);
 
   const handleChordTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setConfig(stringToChord(e.target.value));
+    setConfig(stringToConfigurableChord(e.target.value));
   }
 
   return (
@@ -56,7 +56,7 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
       <StyledTextField
         label="Chord"
         variant="standard"
-        value={config.chord.title}
+        value={config.title}
         onChange={handleChordTitleChange}
         onBlur={() => props.onChange(config, props.index)}
         helperText="Changing this value will reset the other fields"

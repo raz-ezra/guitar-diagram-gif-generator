@@ -2,7 +2,7 @@ import React, { ChangeEvent } from "react";
 import styled from "@emotion/styled";
 import ChordConfigurationPanel from "./ChordConfigurationPanel";
 import TextField from "@mui/material/TextField";
-import { arrayToChords, Chord, ChordConfiguration, getEmptyChordConfigiration, getEmptyChordObject } from "../ChordDiagram";
+import { arrayToConfigurableChords, ConfigurableChord, getEmptyChordConfiguration } from "../ChordDiagram";
 
 const StyledButton = styled.button`
   padding: 5px;
@@ -30,19 +30,19 @@ const StyledTextField = styled(TextField)`
 `;
 
 type ConfigurationPanelProps = {
-  chordsConfigurations: ChordConfiguration[];
-  setChordsConfigurations: (chords: ChordConfiguration[]) => void;
+  chordsConfigurations: ConfigurableChord[];
+  setChordsConfigurations: (chords: ConfigurableChord[]) => void;
 };
 
 function ChordsSequence(props: ConfigurationPanelProps) {
-  const handleChange = (chord: ChordConfiguration, index: number) => {
+  const handleChange = (chord: ConfigurableChord, index: number) => {
     const newChords = [...props.chordsConfigurations];
     newChords[index] = chord;
     props.setChordsConfigurations(newChords);
   };
 
   const addChord = () => {
-    props.setChordsConfigurations([...props.chordsConfigurations, getEmptyChordConfigiration()]);
+    props.setChordsConfigurations([...props.chordsConfigurations, getEmptyChordConfiguration()]);
   };
 
   const removeChord = (index: number) => {
@@ -53,7 +53,7 @@ function ChordsSequence(props: ConfigurationPanelProps) {
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
     const chordArray = e.target.value === "" ? [""] : e.target.value.replace("\n", " ").split(" ");
-    props.setChordsConfigurations(arrayToChords(chordArray));
+    props.setChordsConfigurations(arrayToConfigurableChords(chordArray));
 }
 
   return (
@@ -61,7 +61,7 @@ function ChordsSequence(props: ConfigurationPanelProps) {
       <InputWrapper>
         <StyledTextField
           label={"Chord Sequence Text Input"}
-          value={props.chordsConfigurations.map(config => config.chord.title).join(" ")}
+          value={props.chordsConfigurations.map(config => config.title).join(" ")}
           onChange={handleTextChange}
           multiline
         />
