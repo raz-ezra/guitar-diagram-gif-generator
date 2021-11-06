@@ -478,7 +478,19 @@ export class ChordDiagram {
       };
     }
 
+
+
     // string markings with labels
+    if (this.params.forcePosition && this.params.forcePosition > 1) {
+      this.elements.fingersTopCoer = {
+        node: this.elements.layers.stringMarkings
+            .rect(this.params.width, fretsCoverTopHeight)
+            .move(0, 0)
+            .stroke({ width: 0 })
+            .fill(coverTopGradient),
+      };
+    }
+
     this.elements.openStringMarkins = [];
     this.elements.mutedStringMarkings = [];
     for (let i = 1; i <= this.params.numOfStrings; i += 1) {
