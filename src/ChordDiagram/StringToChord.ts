@@ -100,6 +100,7 @@ export const getEmptyChordConfiguration = (title: string = ""): ConfigurableChor
   string: title,
   title: title,
   availablePositions: [],
+  isLastPositionCustom: false,
   selectedPosition: 1,
   chords: []
 });
@@ -108,6 +109,7 @@ export type ConfigurableChord = {
   string: string,
   title: string,
   availablePositions: number[],
+  isLastPositionCustom: boolean,
   selectedPosition: number,
   chords: Chord[]
 }
@@ -122,6 +124,7 @@ export function stringToConfigurableChord(chordTitle: string): ConfigurableChord
     string: chordTitle,
     title: chordTitle,
     availablePositions: chordFingerings.fingerings.map((_: any, index: number) => index + 1),
+    isLastPositionCustom: false,
     selectedPosition: 1,
     chords: chords
   }
