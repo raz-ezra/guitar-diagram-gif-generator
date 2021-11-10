@@ -32,6 +32,7 @@ export type ChordDiagramParams = {
     animationDuration?: number;
     timeBetweenChords?: number
     forcePosition?: number
+    playChord?: boolean;
 };
 
 export const defaultParams: ChordDiagramParams = {
@@ -51,7 +52,8 @@ export const defaultParams: ChordDiagramParams = {
     fingersLabelColor: "#ffffff",
     backgroundColor: "#ffffff",
     animationDuration: 1000,
-    timeBetweenChords: 2000
+    timeBetweenChords: 2000,
+    playChord: true
 };
 
 type TextAttributes = {
@@ -125,6 +127,21 @@ export class ChordDiagram {
         this.currentChord = index;
         const chord = (index || index === 0) ? this.chordSequence[index] : null;
         this.drawChord(chord ?? getEmptyChordObject(), animate);
+        if (chord && this.params.playChord) {
+            this.playTimeouts.push(setTimeout(() => {
+                [0, 1, 2, 3, 4, 5].forEach((stringIndex) => {
+                    this.playTimeouts.push(setTimeout(() => {
+                        if (!chord.mutedStrings.includes(6 - stringIndex)) {
+                            this.elements.strings[stringIndex].node.animate(this.calcedParams.animationDuration / 4).stroke({width: this.params.stringWidth * 4})
+                        }
+                    }, 50 * stringIndex));
+
+                    this.playTimeouts.push(setTimeout(() => {
+                        this.elements.strings[stringIndex].node.animate(this.calcedParams.animationDuration / 4).stroke({width: this.params.stringWidth})
+                    }, 50 * stringIndex + this.calcedParams.animationDuration / 4));
+                })
+            }, this.calcedParams.animationDuration));
+        }
         return this.currentChord;
     }
 
@@ -214,7 +231,7 @@ export class ChordDiagram {
         toX: number,
         toY: number
     ) {
-        return layer.line(0, 0, toX - fromX, toY - fromY).move(fromX, fromY);
+        return layer.line(0, 0, toX - fromX, toY - fromY).move(fromX, fromY).stroke({linecap: 'round'});
     }
 
     drawCircle(layer: Svg | G, size: number, x: number, y: number) {
@@ -311,7 +328,7 @@ export class ChordDiagram {
         const topDiagramCoverXPosition =
             this.calcedParams.origin.x - this.params.fretsWidth / 2;
         const labelCoverWidth =
-            this.calcedParams.origin.x - this.params.fretsWidth / 2;
+            this.calcedParams.origin.x - this.params.fretsWidth * 2;
         const topLabelCoverHeight =
             this.calcedParams.origin.y -
             this.calcedParams.bridgeStrokeWidth / 2 -
@@ -521,8 +538,7 @@ export class ChordDiagram {
                     fingerBasePositionY + this.calcedParams.fretSpacing / 4
                 ).stroke({
                     width: this.calcedParams.fretSpacing / 2,
-                    color: this.params.fingersColor || this.params.defaultColor,
-                    linecap: 'round'
+                    color: this.params.fingersColor || this.params.defaultColor
                 }),
                 label: null,
             };
