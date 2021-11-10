@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import ChordConfigurationPanel from "./ChordConfigurationPanel";
 import TextField from "@mui/material/TextField";
@@ -31,16 +31,23 @@ const StyledTextField = styled(TextField)`
 type ConfigurationPanelProps = {
   chordsConfigurations: ConfigurableChord[];
   setChordsConfigurations: (chords: ConfigurableChord[]) => void;
-  currentChord: number;
+  currentChord: number | null;
   setCurrentChord: (index: number) => void;
 };
 
 function ChordsSequence(props: ConfigurationPanelProps) {
   const [stringValue, setStringValue] = useState<string>("")
+  const textInputField = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setStringValue(props.chordsConfigurations.map(config => config.string).join(" "));
   }, [props.chordsConfigurations])
+
+  useEffect(() => {
+    if (!props.currentChord && textInputField.current) {
+      textInputField.current.scrollIntoView({behavior: "smooth", block: "start"});
+    }
+  }, [props.currentChord])
 
   const handleChange = (chord: ConfigurableChord, index: number) => {
     const newChords = [...props.chordsConfigurations];
@@ -64,8 +71,8 @@ function ChordsSequence(props: ConfigurationPanelProps) {
   }
 
   return (
-    <>
-      <InputWrapper>
+    <div>
+      <InputWrapper ref={textInputField}>
         <StyledTextField
           label={"Chord Sequence Text Input"}
           value={stringValue}
@@ -88,7 +95,7 @@ function ChordsSequence(props: ConfigurationPanelProps) {
       <ButtonWrapper>
         <StyledButton onClick={addChord} variant="contained">+Add Chord</StyledButton>
       </ButtonWrapper>
-    </>
+    </div>
   );
 }
 

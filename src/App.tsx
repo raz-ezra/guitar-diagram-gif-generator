@@ -18,7 +18,7 @@ function App() {
     const [diagramConfiguration, setDiagramConfiguration] =
         useState<ChordDiagramParams>({...defaultParams, debugMode: false});
     const [chords, setChords] = useState<ConfigurableChord[]>(arrayToConfigurableChords(["C", "Cmaj7", "C7", "F", "F/E", "D", "G", "Amin", "A-maj7", "Am7", "Am6", "F", "Eb", "G", "C"]));
-    const [currentChord, setCurrentChord] = useState<number>(0);
+    const [currentChord, setCurrentChord] = useState<number | null>(null);
     // try {
     //   // TODO - use this
     //   const chordsFromText = parseChords("|" + chords.join(" ") + "|");

@@ -15,7 +15,7 @@ type ConfigurationPanelProps = {
     setChords: (chords: ConfigurableChord[]) => void;
     diagramConfiguration: ChordDiagramParams;
     setDiagramConfiguration: (configuration: ChordDiagramParams) => void;
-    currentChord: number;
+    currentChord: number | null;
     setCurrentChord: (index: number) => void;
 };
 
