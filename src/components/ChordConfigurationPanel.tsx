@@ -12,6 +12,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Checkbox from "@mui/material/Checkbox";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ErrorIcon from '@mui/icons-material/Error';
+import { Color } from "./layout/Color";
 
 const ChordConfigurationWrapper = styled.div<{ selected: boolean, hasErrors: boolean, isEmptyChord: boolean }>`
   padding: 20px;
@@ -21,15 +22,15 @@ const ChordConfigurationWrapper = styled.div<{ selected: boolean, hasErrors: boo
   border-radius: 20px;
   border: ${({selected, hasErrors, isEmptyChord}) => {
     if (hasErrors) {
-      return "4px solid red"
+      return `4px solid ${Color.errorRed}`
     }
     if (isEmptyChord) {
-      return "4px solid orange"
+      return `4px solid ${Color.warningOrange}`
     }
     if (selected) {
-      return "4px solid #1976d2"
+      return `4px solid ${Color.selectedBlue}`
     }
-    return "2px solid gray"
+    return `2px solid ${Color.borderGray}`
   }};
   margin: 20px;
   position: relative;
@@ -37,6 +38,7 @@ const ChordConfigurationWrapper = styled.div<{ selected: boolean, hasErrors: boo
 
 const Row = styled.div<{ alignCenter?: boolean }>`
   display: flex;
+  justify-content: flex-start;
   gap: 20px;
   ${({alignCenter}) => alignCenter ? `align-items: center;` : null}
 `;
@@ -52,7 +54,7 @@ const ErrorText = styled.div<{ type: string }>`
   align-items: center;
   gap: 10px;
   font-size: 14px;
-  color: ${({type}) => type === "warning" ? "orange" : "red"};;
+  color: ${({type}) => type === "warning" ? Color.warningOrange : Color.errorRed};;
 `;
 
 const BaseBorderLabel = styled.div<{ selected: boolean, hasErrors: boolean, isEmptyChord: boolean, size: number, fontSize: string }>`
@@ -62,15 +64,15 @@ const BaseBorderLabel = styled.div<{ selected: boolean, hasErrors: boolean, isEm
   height: ${({size}) => size}px;
   background-color: ${({selected, hasErrors, isEmptyChord}) => {
     if (hasErrors) {
-      return "red"
+      return Color.errorRed
     }
     if (isEmptyChord) {
-      return "orange"
+      return Color.warningOrange
     }
     if (selected) {
-      return "#1976d2"
+      return Color.selectedBlue
     }
-    return "gray"
+    return Color.borderGray
   }};
   color: ${({isEmptyChord}) => isEmptyChord ? "black" : "white"};;
   display: flex;
@@ -90,8 +92,7 @@ const ShowChordButton = styled(BaseBorderLabel)`
 `;
 
 const StyledTextField = styled(TextField)<{ width?: string }>`
-  flex-grow: 1;
-  ${({width}) => width ? `width: ${width};` : null}
+  ${({width}) => width ? `width: ${width};` : "flex-grow: 1;"}
 `;
 
 const StyledAutoComplete = styled(Autocomplete)<{ width: string }>`
@@ -108,7 +109,7 @@ const StyledTable = styled.table`
 
   & tr:first-of-type {
     td {
-      border-top: 1px gray solid;
+      border-top: 1px ${Color.bgGray} solid;
 
       &:first-of-type {
         border-top-left-radius: 10px;
@@ -122,7 +123,7 @@ const StyledTable = styled.table`
 
   & tr:last-of-type {
     td {
-      border-bottom: 1px gray solid;
+      border-bottom: 1px ${Color.bgGray} solid;
 
       &:first-of-type {
         border-bottom-left-radius: 10px;
@@ -135,12 +136,12 @@ const StyledTable = styled.table`
   }
 
   & td {
-    border-right: 1px gray solid;
-    border-bottom: 1px gray solid;
+    border-right: 1px ${Color.bgGray} solid;
+    border-bottom: 1px ${Color.bgGray} solid;
     padding: 5px 8px;
 
     &:first-of-type {
-      border-left: 1px gray solid;
+      border-left: 1px ${Color.bgGray} solid;
     }
 
     &:not(:first-of-type) {
@@ -174,6 +175,10 @@ function getIsBarreInvalid(stringStart: number, stringEnd: number) {
     return stringStart < stringEnd;
 }
 
+function getIsStartFretValid(startFret: number, fingers: Finger[]) {
+    return fingers.some(finger => finger.fret < startFret);
+}
+
 function getErrors(config: ConfigurableChord) {
     const errors: any = {};
     if (config.isLastPositionCustom && config.selectedPosition === config.availablePositions.length && config.chords[config.selectedPosition - 1].fingers.length === 0) {
@@ -193,8 +198,12 @@ function getErrors(config: ConfigurableChord) {
                 errors.barreInvalid = true
             }
         }
-
     })
+
+    if (getIsStartFretValid(config.chords[config.selectedPosition - 1].startFret, config.chords[config.selectedPosition - 1].fingers)) {
+        errors.hasErrors = true
+        errors.startFretIsAfterLowestFinger = true
+    }
 
     return errors;
 }
@@ -211,6 +220,10 @@ const errorTexts: any = {
     barreInvalid: {
         type: "error",
         text: "Barre end position cannot be bigger than string"
+    },
+    startFretIsAfterLowestFinger: {
+        type: "error",
+        text: "Start fret has to be lower than lowest finger"
     }
 }
 
@@ -285,6 +298,14 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
         return newConfig;
     };
 
+    const handleChordStartFretChange = (startFret: string) => {
+        const newConfig = {...config};
+        const value = startFret !== "" ? parseInt(startFret) : newConfig.chords[newConfig.selectedPosition - 1].startFret;
+        newConfig.chords[newConfig.selectedPosition - 1].startFret = value;
+
+        setConfig(newConfig);
+    }
+
     return (
         <ChordConfigurationWrapper
             selected={props.isCurrentChord}
@@ -320,6 +341,8 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
                     onBlur={handleBlur}
                     helperText="Changing this value will reset the other fields"
                 />
+            </Row>
+            <Row>
                 <StyledAutoComplete
                     width="110px"
                     disableClearable
@@ -337,6 +360,16 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
                     renderInput={(params) => (
                         <TextField {...params} label="Position" variant="standard"/>
                     )}
+                />
+                <StyledTextField
+                    label="Start Fret"
+                    variant="standard"
+                    width="80px"
+                    value={chord.startFret}
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => handleChordStartFretChange(e.target.value)}
+                    onBlur={handleBlur}
+                    error={getIsStartFretValid(chord.startFret, chord.fingers)}
                 />
             </Row>
             <Row alignCenter>

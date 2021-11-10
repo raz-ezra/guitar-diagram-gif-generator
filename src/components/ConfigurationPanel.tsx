@@ -4,10 +4,12 @@ import DiagramConfiguration from "./DiagramConfiguration";
 import ChordsSequence from "./ChordsSequence";
 import BasicTabs from "./layout/BasicTabs";
 import {ChordDiagramParams, ConfigurableChord} from "../ChordDiagram";
+import {Color} from "./layout/Color";
 
 const Wrapper = styled.div`
   height: 100%;
   width: 30vw;
+  border-right: 2px solid ${Color.bgGray};
 `;
 
 type ConfigurationPanelProps = {

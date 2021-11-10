@@ -51,8 +51,7 @@ export const defaultParams: ChordDiagramParams = {
     fingersLabelColor: "#ffffff",
     backgroundColor: "#ffffff",
     animationDuration: 1000,
-    timeBetweenChords: 2000,
-    forcePosition: 0
+    timeBetweenChords: 2000
 };
 
 type TextAttributes = {

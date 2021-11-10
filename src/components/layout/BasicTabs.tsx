@@ -3,6 +3,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import styled from "@emotion/styled";
+import { Color } from "./Color";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -11,7 +12,7 @@ interface TabPanelProps {
 }
 
 const StyledPanel = styled.div`
-  background-color: #eeeeee;
+  background-color: ${Color.bgGray};
   flex-grow: ${({ hidden }) => (hidden ? 0 : 1)};
   display: flex;
   flex-direction: column;

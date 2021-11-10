@@ -69,14 +69,6 @@ function MainChord({diagramConfiguration, chords, setCurrentChord}: MainChordPro
     }, [diagramConfiguration]);
 
     useEffect(() => {
-        // const chord = (currentChord || currentChord === 0) && chords[currentChord];
-        // if (chordDiagram.current !== null) {
-        //     if (chord) {
-        //         chordDiagram.current.drawChord(chord, true);
-        //     } else {
-        //         chordDiagram.current.drawChord(getEmptyChordObject(), true);
-        //     }
-        // }
         if (chordDiagram.current !== null) {
             if (chordDiagram.current && chordDiagram.current.getCurrentChord() && chordDiagram.current.getCurrentChord()! > chords.length) {
                 chordDiagram.current.moveToChordInSequence(null, true);
