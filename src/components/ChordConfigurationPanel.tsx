@@ -21,10 +21,10 @@ const ChordConfigurationWrapper = styled.div<{ selected: boolean, hasErrors: boo
   border-radius: 20px;
   border: ${({selected, hasErrors, isEmptyChord}) => {
     if (hasErrors) {
-      return "2px solid red"
+      return "4px solid red"
     }
     if (isEmptyChord) {
-      return "2px solid orange"
+      return "4px solid orange"
     }
     if (selected) {
       return "4px solid #1976d2"

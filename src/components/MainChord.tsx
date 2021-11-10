@@ -1,6 +1,6 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import styled from "@emotion/styled";
-import {Chord, ChordDiagram, ChordDiagramParams, getEmptyChordObject} from "../ChordDiagram";
+import {Chord, ChordDiagram, ChordDiagramParams} from "../ChordDiagram";
 import Button from "@mui/material/Button";
 
 const MainChordWrapper = styled.div`
@@ -31,12 +31,12 @@ const ButtonContainer = styled.div`
 `;
 
 const ChordIndex = styled.div`
-    text-align: center;
-    color: #1976d2;
-  
-    & span {
-      font-weight: 500;
-    }
+  text-align: center;
+  color: #1976d2;
+
+  & span {
+    font-weight: 500;
+  }
 `
 
 const ChordDiagramWrapper = styled.div<{ debugMode: boolean | undefined }>`
@@ -46,14 +46,13 @@ const ChordDiagramWrapper = styled.div<{ debugMode: boolean | undefined }>`
 type MainChordProps = {
     diagramConfiguration: ChordDiagramParams;
     chords: Chord[];
-    currentChord: number | null;
     setCurrentChord: (index: number | null) => void;
 };
 
-function MainChord({diagramConfiguration, chords, currentChord, setCurrentChord}: MainChordProps) {
+function MainChord({diagramConfiguration, chords, setCurrentChord}: MainChordProps) {
     const diagramWrapper = useRef<HTMLDivElement>(null);
     const chordDiagram = useRef<ChordDiagram | null>(null);
-
+    const [playButtonText, setPlayButtonText] = useState<string>("Play");
 
     useEffect(() => {
         if (diagramWrapper.current) {
@@ -70,28 +69,42 @@ function MainChord({diagramConfiguration, chords, currentChord, setCurrentChord}
     }, [diagramConfiguration]);
 
     useEffect(() => {
-        const chord = (currentChord || currentChord === 0) && chords[currentChord];
+        // const chord = (currentChord || currentChord === 0) && chords[currentChord];
+        // if (chordDiagram.current !== null) {
+        //     if (chord) {
+        //         chordDiagram.current.drawChord(chord, true);
+        //     } else {
+        //         chordDiagram.current.drawChord(getEmptyChordObject(), true);
+        //     }
+        // }
         if (chordDiagram.current !== null) {
-            if (chord) {
-                chordDiagram.current.drawChord(chord, true);
-            } else {
-                chordDiagram.current.drawChord(getEmptyChordObject(), true);
+            if (chordDiagram.current && chordDiagram.current.getCurrentChord() && chordDiagram.current.getCurrentChord()! > chords.length) {
+                chordDiagram.current.moveToChordInSequence(null, true);
             }
+            chordDiagram.current.setChords(chords);
         }
-
-    }, [chords, currentChord]);
+    }, [chords]);
 
     const handleMoveChord = (direction: number) => {
-        if ((!currentChord && currentChord !== 0) && direction === -1) {
-            setCurrentChord(chords.length - 1);
-        } else if ((!currentChord && currentChord !== 0) && direction === 1) {
-            setCurrentChord(0);
-        } else if ((currentChord || currentChord === 0) && (currentChord + direction === chords.length || currentChord + direction < 0)) {
-            setCurrentChord(null);
-        } else {
-            setCurrentChord(currentChord! + direction);
+        if (chordDiagram.current !== null) {
+            direction === 1 ?
+                setCurrentChord(chordDiagram.current.moveToNextChord(true)) :
+                setCurrentChord(chordDiagram.current.moveToPreviousChord(true));
         }
     };
+
+    const handlePlay = (isPlaying: boolean) => {
+        if (chordDiagram.current !== null) {
+            if (isPlaying) {
+                chordDiagram.current.stopSequence(true, setCurrentChord);
+                setPlayButtonText("Play")
+            } else {
+                chordDiagram.current.playSequence(null, true, setCurrentChord, () => setPlayButtonText("Play"))
+                setPlayButtonText("Stop")
+
+            }
+        }
+    }
 
     return (
         <MainChordWrapper>
@@ -102,13 +115,22 @@ function MainChord({diagramConfiguration, chords, currentChord, setCurrentChord}
             />
             <BottomContainer>
                 <ButtonContainer>
-                    <Button onClick={() => handleMoveChord(-1)} variant="contained">
+                    <Button onClick={() => handleMoveChord(-1)} variant="contained" disabled={chordDiagram.current?.isPlaying}>
                         &lt;-- Previous Chord
                     </Button>
-                    <Button onClick={() => handleMoveChord(1)} variant="contained">Next Chord --&gt;</Button>
+                    <Button onClick={() => handlePlay(chordDiagram.current?.isPlaying ?? false)} variant="contained">
+                        {playButtonText}
+                    </Button>
+                    <Button onClick={() => handleMoveChord(1)} variant="contained" disabled={chordDiagram.current?.isPlaying}>Next Chord --&gt;</Button>
                 </ButtonContainer>
                 <ChordIndex>
-                    Current chord: <span>{currentChord || currentChord === 0 ? currentChord + 1 : "Empty"}</span>
+                    {"Current chord: "}
+                    <span>
+                        {chordDiagram.current?.getCurrentChord() || chordDiagram.current?.getCurrentChord() === 0 ?
+                            chordDiagram.current?.getCurrentChord()! + 1 :
+                            "Empty"
+                        }
+                    </span>
                 </ChordIndex>
             </BottomContainer>
 
