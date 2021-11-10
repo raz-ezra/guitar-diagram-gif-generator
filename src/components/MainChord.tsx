@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import { Chord, ChordDiagram, ChordDiagramParams } from "../ChordDiagram";
 import Button from "@mui/material/Button";
@@ -28,30 +28,34 @@ const ChordDiagramWrapper = styled.div<{ debugMode: boolean | undefined }>`
 type MainChordProps = {
   diagramConfiguration: ChordDiagramParams;
   chords: Chord[];
+  currentChord: number;
+  setCurrentChord: (index: number) => void;
 };
 
-function MainChord(props: MainChordProps) {
+function MainChord({diagramConfiguration, chords, currentChord, setCurrentChord}: MainChordProps) {
   const diagramWrapper = useRef<HTMLDivElement>(null);
   const chordDiagram = useRef<ChordDiagram | null>(null);
-  const [currentChord, setCurrentChord] = useState<number>(0);
 
-  const chord = props.chords[currentChord];
 
   useEffect(() => {
     if (diagramWrapper.current) {
       diagramWrapper.current.innerHTML = "";
       chordDiagram.current = new ChordDiagram(
         "#main-chord-diagram-wrapper",
-        props.diagramConfiguration
+        diagramConfiguration
       );
     }
 
     if (chordDiagram.current) {
       chordDiagram.current.drawBaseDiagram();
     }
-  }, [props.diagramConfiguration]);
+  }, [diagramConfiguration]);
 
   useEffect(() => {
+    const chord = chords[currentChord];
+    if (currentChord === -1 ) {
+      setCurrentChord(0);
+    }
     if (chordDiagram.current !== null) {
       if (chord) {
         chordDiagram.current.drawChord(chord, true);
@@ -60,13 +64,15 @@ function MainChord(props: MainChordProps) {
       }
     }
 
-  }, [chord]);
+  }, [chords, currentChord, setCurrentChord]);
 
   const handleMoveChord = (direction: number) => {
     if (currentChord + direction < 0) {
-      setCurrentChord(props.chords.length - 1);
-    } else if (currentChord + direction === props.chords.length) {
+      setCurrentChord(chords.length - 1);
+    } else if (currentChord + direction === chords.length) {
       setCurrentChord(0);
+    } else if (chords.length === 1) {
+      setCurrentChord(-1);
     } else {
       setCurrentChord(currentChord + direction);
     }
@@ -77,7 +83,7 @@ function MainChord(props: MainChordProps) {
       <ChordDiagramWrapper
         id={"main-chord-diagram-wrapper"}
         ref={diagramWrapper}
-        debugMode={props.diagramConfiguration.debugMode}
+        debugMode={diagramConfiguration.debugMode}
       />
       <ButtonContainer>
         <Button onClick={() => handleMoveChord(-1)}>

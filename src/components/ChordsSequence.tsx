@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import ChordConfigurationPanel from "./ChordConfigurationPanel";
 import TextField from "@mui/material/TextField";
@@ -32,9 +32,17 @@ const StyledTextField = styled(TextField)`
 type ConfigurationPanelProps = {
   chordsConfigurations: ConfigurableChord[];
   setChordsConfigurations: (chords: ConfigurableChord[]) => void;
+  currentChord: number;
+  setCurrentChord: (index: number) => void;
 };
 
 function ChordsSequence(props: ConfigurationPanelProps) {
+  const [stringValue, setStringValue] = useState<string>("")
+
+  useEffect(() => {
+    setStringValue(props.chordsConfigurations.map(config => config.string).join(" "));
+  }, [props.chordsConfigurations])
+
   const handleChange = (chord: ConfigurableChord, index: number) => {
     const newChords = [...props.chordsConfigurations];
     newChords[index] = chord;
@@ -51,18 +59,19 @@ function ChordsSequence(props: ConfigurationPanelProps) {
     props.setChordsConfigurations(newChords);
   };
 
-  const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const chordArray = e.target.value === "" ? [""] : e.target.value.replace("\n", " ").split(" ");
+  const handleTextBlur = () => {
+    const chordArray = stringValue === "" ? [] : stringValue.replace("\n", " ").split(" ");
     props.setChordsConfigurations(arrayToConfigurableChords(chordArray));
-}
+  }
 
   return (
     <>
       <InputWrapper>
         <StyledTextField
           label={"Chord Sequence Text Input"}
-          value={props.chordsConfigurations.map(config => config.title).join(" ")}
-          onChange={handleTextChange}
+          value={stringValue}
+          onChange={(e) => setStringValue(e.target.value)}
+          onBlur={handleTextBlur}
           multiline
         />
       </InputWrapper>
@@ -70,6 +79,8 @@ function ChordsSequence(props: ConfigurationPanelProps) {
         <ChordConfigurationPanel
           key={index}
           index={index}
+          isCurrentChord={props.currentChord === index}
+          setAsCurrentChord={() => props.setCurrentChord(index)}
           chordConfiguration={config}
           onChange={handleChange}
           removeChord={removeChord}

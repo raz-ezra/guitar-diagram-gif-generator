@@ -1,16 +1,17 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import TextField from "@mui/material/TextField";
-import {Chord, ConfigurableChord, Finger, stringToConfigurableChord } from "../ChordDiagram";
+import {Chord, ConfigurableChord, constructChordStringFromConfigurableChord, Finger, stringToConfigurableChord } from "../ChordDiagram";
 import Autocomplete from "@mui/material/Autocomplete";
+import Checkbox from "@mui/material/Checkbox";
 
-const ChordConfigurationWrapper = styled.div`
+const ChordConfigurationWrapper = styled.div<{selected: boolean}>`
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
   border-radius: 20px;
-  border: 1px solid gray;
+  border:  ${({selected}) => selected ? "3px solid gray" : "1px solid gray"};
   margin: 20px;
   position: relative;
 `;
@@ -36,6 +37,20 @@ const ChordLabel = styled.div`
   font-size: 0.6em;
 `;
 
+const ShowChordButton = styled.div`
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  background-color: gray;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+`;
+
 const StyledTextField = styled(TextField)<{width?: string}>`
   flex-grow: 1;
   ${({width}) => width ? `width: ${width};` : null}
@@ -43,6 +58,10 @@ const StyledTextField = styled(TextField)<{width?: string}>`
 
 const StyledAutoComplete = styled(Autocomplete)<{width: string}>`
   width: ${({width}) => width};
+`;
+
+const StyledCheckbox = styled(Checkbox)`
+  padding: 0;
 `;
 
 const StyledTable = styled.table`
@@ -96,6 +115,8 @@ type ChordConfigurationProps = {
   chordConfiguration: ConfigurableChord;
   onChange: (chord: ConfigurableChord, index: number) => void;
   removeChord: (index: number) => void;
+  isCurrentChord: boolean;
+  setAsCurrentChord: () => void;
 };
 
 const getFingerByString = (string: number, chord: Chord): Finger | null => {
@@ -106,6 +127,17 @@ const getFingerByString = (string: number, chord: Chord): Finger | null => {
 
 function ChordConfigurationPanel(props: ChordConfigurationProps) {
   const [config, setConfig] = useState<ConfigurableChord>(props.chordConfiguration);
+  const wrapper = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+      setConfig(props.chordConfiguration)
+  }, [props.chordConfiguration])
+
+    useEffect(() => {
+        if (wrapper.current && props.isCurrentChord) {
+            wrapper.current.scrollIntoView({behavior: "smooth", block: "center"});
+        }
+    }, [props.isCurrentChord])
 
   const chord = config.chords[config.selectedPosition - 1];
 
@@ -114,12 +146,13 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
     }
 
     const handleBlur = () => {
-        props.onChange(config, props.index);
+        const newString = constructChordStringFromConfigurableChord(config);
+        props.onChange({...config, string: newString}, props.index);
     };
 
-    const handleFingerValueChange = (stringIndex: number, fingerAttr: "index" | "fret" | "string" , stringValue: string) => {
+    const handleFingerValueChange = (stringIndex: number, attribute: "index" | "fret" | "string" | "mutedStrings" , value: any) => {
         const newConfig = {...config};
-        if (!newConfig.isLastPositionCustom && stringValue !== "") {
+        if (!newConfig.isLastPositionCustom) {
             newConfig.chords.push(newConfig.chords[newConfig.selectedPosition - 1]);
             newConfig.selectedPosition = newConfig.chords.length;
             newConfig.availablePositions.push(newConfig.chords.length);
@@ -128,39 +161,44 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
             newConfig.selectedPosition = newConfig.chords.length;
         }
 
-        const fingerIndex = newConfig.chords[newConfig.selectedPosition - 1].fingers.findIndex(finger => {
-            return (Array.isArray(finger.string) && finger.string[0] === stringIndex) || finger.string === stringIndex;
-        });
-
-        if (fingerIndex > -1) {
-            if (stringValue === "") {
-                newConfig.chords[newConfig.selectedPosition - 1].fingers.splice(fingerIndex , 1)
-            }
-            else {
-                let value: number | [number, number] = parseInt(stringValue);
-                let actualAttribute = fingerAttr;
-                if (fingerAttr === "string") {
-                    value = [stringIndex, value]
-                }
-                newConfig.chords[newConfig.selectedPosition - 1].fingers[fingerIndex] = {
-                    ...newConfig.chords[newConfig.selectedPosition - 1].fingers[fingerIndex],
-                    [actualAttribute]: value
-                }
-            }
+        if (attribute === "mutedStrings") {
+            newConfig.chords[newConfig.selectedPosition - 1].mutedStrings = value[0];
+            newConfig.chords[newConfig.selectedPosition - 1].openStrings = value[1];
         } else {
-            newConfig.chords[newConfig.selectedPosition - 1].fingers.push({
-                index: parseInt(stringValue),
-                string: stringIndex,
-                fret: 0
-            })
-        }
+            const fingerIndex = newConfig.chords[newConfig.selectedPosition - 1].fingers.findIndex(finger => {
+                return (Array.isArray(finger.string) && finger.string[0] === stringIndex) || finger.string === stringIndex;
+            });
 
+            if (fingerIndex > -1) {
+                if (value === "") {
+                    newConfig.chords[newConfig.selectedPosition - 1].fingers.splice(fingerIndex , 1)
+                }
+                else {
+                    let actualValue: number | [number, number] = parseInt(value);
+                    if (attribute === "string") {
+                        actualValue = [stringIndex, value]
+                    }
+                    newConfig.chords[newConfig.selectedPosition - 1].fingers[fingerIndex] = {
+                        ...newConfig.chords[newConfig.selectedPosition - 1].fingers[fingerIndex],
+                        [attribute]: actualValue
+                    }
+                }
+            } else {
+                newConfig.chords[newConfig.selectedPosition - 1].fingers.push({
+                    index: parseInt(value),
+                    string: stringIndex,
+                    fret: 0
+                })
+            }
+        }
         setConfig(newConfig);
+        return newConfig;
     };
 
   return (
-    <ChordConfigurationWrapper>
+    <ChordConfigurationWrapper selected={props.isCurrentChord} ref={wrapper}>
       <ChordLabel>{props.index + 1}</ChordLabel>
+        <ShowChordButton onClick={() => props.setAsCurrentChord()}>&gt;</ShowChordButton>
         <Row>
             <StyledTextField
                 label="Chord"
@@ -177,8 +215,9 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
                 value={config.selectedPosition}
                 onChange={(e, value: any) =>  {
                     const newConfig = {...config, selectedPosition: value};
-                    setConfig(newConfig)
-                    props.onChange(newConfig, props.index)
+                    const newString = constructChordStringFromConfigurableChord(newConfig);
+                    setConfig({...newConfig, string: newString})
+                    props.onChange({...newConfig, string: newString}, props.index)
                 }}
                 getOptionLabel={(option: any) => {
                     return config.isLastPositionCustom && option === config.chords.length ? "Custom" : option.toString();
@@ -190,19 +229,22 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
         </Row>
         <Row alignCenter>
             <StyledTable>
+                <thead>
                 <tr>
                     <td style={{width: "30px"}}>String:</td>
                     {[6,5,4,3,2,1].map(string => (
-                        <td>{string}</td>
+                        <td key={string}>{string}</td>
                     ))}
                 </tr>
+                </thead>
+                <tbody>
                 <tr>
                     <td>Finger:</td>
                     <>
                         {[6,5,4,3,2,1].map(string => {
                             const finger = getFingerByString(string, chord);
                             return (
-                                <td>
+                                <td key={string}>
                                     <StyledTextField
                                         onFocus={(e) => e.target.select()}
                                         fullWidth
@@ -211,7 +253,7 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
                                         variant="standard"
                                         inputProps={{style: { textAlign: 'center' }}}
                                         value={(!isNaN(finger?.index ?? NaN) && finger?.index) || ""}
-                                        onChange={(e) => handleFingerValueChange(string, "index", e.target.value)}
+                                        onChange={(e) => e.target.value !== "" && handleFingerValueChange(string, "index", e.target.value)}
                                         onBlur={handleBlur}
                                     />
                                 </td>
@@ -225,7 +267,7 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
                         {[6,5,4,3,2,1].map(string => {
                             const finger = getFingerByString(string, chord);
                             return (
-                                <td>
+                                <td key={string}>
                                     <StyledTextField
                                         onFocus={(e) => e.target.select()}
                                         fullWidth
@@ -235,7 +277,7 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
                                         inputProps={{style: { textAlign: 'center' }}}
                                         disabled={!finger?.index}
                                         value={(!isNaN(finger?.fret ?? NaN) && finger?.fret) || ""}
-                                        onChange={(e) => handleFingerValueChange(string, "fret", e.target.value)}
+                                        onChange={(e) => e.target.value !== "" && handleFingerValueChange(string, "fret", e.target.value)}
                                         onBlur={handleBlur}
                                     />
                                 </td>
@@ -249,7 +291,7 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
                         {[6,5,4,3,2,1].map(string => {
                             const finger = getFingerByString(string, chord);
                             return (
-                                <td>
+                                <td key={string}>
                                     <StyledTextField
                                         onFocus={(e) => e.target.select()}
                                         fullWidth
@@ -259,7 +301,7 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
                                         inputProps={{style: { textAlign: 'center' }}}
                                         disabled={!finger?.index}
                                         value={(Array.isArray(finger?.string) && !isNaN(finger?.string[1] ?? NaN) && finger?.string[1]) || ""}
-                                        onChange={(e) => handleFingerValueChange(string, "string", e.target.value)}
+                                        onChange={(e) => e.target.value !== "" && handleFingerValueChange(string, "string", e.target.value)}
                                         onBlur={handleBlur}
                                     />
                                 </td>
@@ -267,6 +309,36 @@ function ChordConfigurationPanel(props: ChordConfigurationProps) {
                         })}
                     </>
                 </tr>
+                <tr>
+                    <td>Muted:</td>
+                    <>
+                        {[6,5,4,3,2,1].map(string => {
+                            return (
+                                <td key={string}>
+                                    <StyledCheckbox
+                                        checked={chord?.mutedStrings.includes(string) ?? false}
+                                        onChange={(e) => {
+                                            const newMutedStrings = [...chord.mutedStrings]
+                                            const newOpenStrings = [...chord.openStrings]
+                                            if (e.target.checked) {
+                                                newMutedStrings.push(string)
+                                                newOpenStrings.splice(newOpenStrings.indexOf(string), 1)
+                                            } else {
+                                                newMutedStrings.splice(newMutedStrings.indexOf(string), 1)
+                                                newOpenStrings.push(string)
+
+                                            }
+                                            const newConfig = handleFingerValueChange(string, "mutedStrings", [newMutedStrings, newOpenStrings])
+                                            const newString = constructChordStringFromConfigurableChord(newConfig);
+                                            props.onChange({...newConfig, string: newString}, props.index);
+                                        }}
+                                    />
+                                </td>
+                            )
+                        })}
+                    </>
+                </tr>
+                </tbody>
             </StyledTable>
         </Row>
     </ChordConfigurationWrapper>
