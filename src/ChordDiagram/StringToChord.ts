@@ -180,7 +180,7 @@ export function parseChordString(chordString: string) {
 export const constructChordStringFromConfigurableChord = (chord: ConfigurableChord): string => {
     let chordString = chord.title;
     let chordStringParams = "";
-    if (chord.selectedPosition !== 1 || (chord.isLastPositionCustom && chord.availablePositions.length === 1)) {
+    if (chord.selectedPosition !== 1 || (chord.isLastPositionCustom && chord.availablePositions.length === 1 && chord.chords[0].fingers.length > 0)) {
         chordStringParams += "p" + chord.selectedPosition;
     }
     if (chord.isLastPositionCustom && chord.selectedPosition === chord.availablePositions.length) {

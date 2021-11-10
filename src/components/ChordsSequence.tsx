@@ -3,11 +3,10 @@ import styled from "@emotion/styled";
 import ChordConfigurationPanel from "./ChordConfigurationPanel";
 import TextField from "@mui/material/TextField";
 import { arrayToConfigurableChords, ConfigurableChord, getEmptyChordConfiguration } from "../ChordDiagram";
+import Button from "@mui/material/Button";
 
-const StyledButton = styled.button`
-  padding: 5px;
-  align-self: flex-end;
-  background-color: #ffffff;
+const StyledButton = styled(Button)`
+  margin: 10px 0 -5px;
 `;
 
 const ButtonWrapper = styled.div`
@@ -87,7 +86,7 @@ function ChordsSequence(props: ConfigurationPanelProps) {
         />
       ))}
       <ButtonWrapper>
-        <StyledButton onClick={addChord}>+Add Chord</StyledButton>
+        <StyledButton onClick={addChord} variant="contained">+Add Chord</StyledButton>
       </ButtonWrapper>
     </>
   );
