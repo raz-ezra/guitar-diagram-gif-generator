@@ -41,6 +41,7 @@ function App() {
             <MainChord
                 diagramConfiguration={diagramConfiguration}
                 chords={chords.map(chord => chord.chords[chord.selectedPosition - 1])}
+                currentChord={currentChord}
                 setCurrentChord={setCurrentChord}
             />
         </Main>

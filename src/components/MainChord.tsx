@@ -47,9 +47,10 @@ type MainChordProps = {
     diagramConfiguration: ChordDiagramParams;
     chords: Chord[];
     setCurrentChord: (index: number | null) => void;
+    currentChord: number | null;
 };
 
-function MainChord({diagramConfiguration, chords, setCurrentChord}: MainChordProps) {
+function MainChord({diagramConfiguration, chords, setCurrentChord, currentChord}: MainChordProps) {
     const diagramWrapper = useRef<HTMLDivElement>(null);
     const chordDiagram = useRef<ChordDiagram | null>(null);
     const [playButtonText, setPlayButtonText] = useState<string>("Play");
@@ -69,7 +70,7 @@ function MainChord({diagramConfiguration, chords, setCurrentChord}: MainChordPro
     }, [diagramConfiguration]);
 
     useEffect(() => {
-        if (chordDiagram.current !== null) {
+        if (chordDiagram.current !== null && !chordDiagram.current.isPlaying) {
             if (chordDiagram.current && chordDiagram.current.getCurrentChord() && chordDiagram.current.getCurrentChord()! > chords.length) {
                 chordDiagram.current.moveToChordInSequence(null, true);
             }
@@ -77,17 +78,23 @@ function MainChord({diagramConfiguration, chords, setCurrentChord}: MainChordPro
         }
     }, [chords]);
 
+    useEffect(() => {
+        if (chordDiagram.current !== null && !chordDiagram.current.isPlaying) {
+            chordDiagram.current.moveToChordInSequence(currentChord, true);
+        }
+    }, [currentChord])
+
     const handleMoveChord = (direction: number) => {
-        if (chordDiagram.current !== null) {
+        if (chordDiagram.current !== null && !chordDiagram.current.isPlaying) {
             direction === 1 ?
                 setCurrentChord(chordDiagram.current.moveToNextChord(true)) :
                 setCurrentChord(chordDiagram.current.moveToPreviousChord(true));
         }
     };
 
-    const handlePlay = (isPlaying: boolean) => {
+    const handlePlay = () => {
         if (chordDiagram.current !== null) {
-            if (isPlaying) {
+            if (chordDiagram.current?.isPlaying) {
                 chordDiagram.current.stopSequence(true, setCurrentChord);
                 setPlayButtonText("Play")
             } else {
@@ -110,7 +117,7 @@ function MainChord({diagramConfiguration, chords, setCurrentChord}: MainChordPro
                     <Button onClick={() => handleMoveChord(-1)} variant="contained" disabled={chordDiagram.current?.isPlaying}>
                         &lt;-- Previous Chord
                     </Button>
-                    <Button onClick={() => handlePlay(chordDiagram.current?.isPlaying ?? false)} variant="contained">
+                    <Button onClick={handlePlay} variant="contained">
                         {playButtonText}
                     </Button>
                     <Button onClick={() => handleMoveChord(1)} variant="contained" disabled={chordDiagram.current?.isPlaying}>Next Chord --&gt;</Button>
