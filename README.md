@@ -1,6 +1,8 @@
 Simple UI for creating animated guitar chord diagrams
 
-![Animated Guitar Chord Diagram](/docs/DiagramGif.gif)
+<img src="/docs/DiagramGif.gif" alt="Animated Guitar Chord Diagram" width="200"/>
+
+
 
 # Usage
 
