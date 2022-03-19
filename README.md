@@ -1,7 +1,8 @@
 Simple UI for creating animated guitar chord diagrams
 
-<img src="/docs/DiagramGif.gif" alt="Animated Guitar Chord Diagram" height="300"/>
-
+<p align="center">
+    <img src="/docs/DiagramGif.gif" alt="Animated Guitar Chord Diagram" height="300"/>
+</p>
 > This project started as an attempt to learn SVG animation, let's see where we'll end up :smiley:
 
 # Usage
@@ -12,9 +13,9 @@ You can use the `Chord Sequence Text Input` at the top of the panel, or add chor
 General settings (appearance, animation, etc.) can be changed in the `Diagram Configuration` tab.
 
 ## Chord Sequencer
-
+<p align="center">
 <img src="/docs/ChordSequencerUI.png" alt="Chords Text Input and Chord Box" height="300"/>
-
+</p>
 ### Chord Sequence Text Input
 
 Type your chord sequence, separating each chord with a space. 
@@ -32,11 +33,9 @@ Each chord has the following controls:
 
 ## Diagram Configuration
 In the `Diagram Configuration` you can change the appearance and animation properties of the diagram.
-
+<p align="center">
 <img src="/docs/DiagramConfigurationUI.png" alt="Diagram Configuration" height="300"/>
-
-
-
+</p>
 
 ### TODOs
 
