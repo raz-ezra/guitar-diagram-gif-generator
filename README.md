@@ -1,6 +1,6 @@
 Simple UI for creating animated guitar chord diagrams
 
-<img src="/docs/DiagramGif.gif" alt="Animated Guitar Chord Diagram" width="200" align="center"/>
+<img src="/docs/DiagramGif.gif" alt="Animated Guitar Chord Diagram" height="300"/>
 
 
 
@@ -13,7 +13,7 @@ General settings (appearance, animation, etc.) can be changed in the `Diagram Co
 
 ## Chord Sequencer
 
-![Chords Text Input and Chord Box](/docs/ChordSequencerUI.png)
+<img src="/docs/ChordSequencerUI.png" alt="Chords Text Input and Chord Box" height="300"/>
 
 ### Chord Sequence Text Input
 
@@ -33,7 +33,8 @@ Each chord has the following controls:
 ## Diagram Configuration
 In the `Diagram Configuration` you can change the appearance and animation properties of the diagram.
 
-![Diagram Configuration](/docs/DiagramConfigurationUI.png)
+<img src="/docs/DiagramConfigurationUI.png" alt="Diagram Configuration" height="300"/>
+
 
 ### TODOs
 
