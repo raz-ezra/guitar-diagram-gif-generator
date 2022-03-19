@@ -2,7 +2,7 @@ Simple UI for creating animated guitar chord diagrams
 
 <img src="/docs/DiagramGif.gif" alt="Animated Guitar Chord Diagram" height="300"/>
 
-
+> This project started as an attempt to learn SVG animation, let's see where we'll end up :)
 
 # Usage
 
@@ -36,21 +36,23 @@ In the `Diagram Configuration` you can change the appearance and animation prope
 <img src="/docs/DiagramConfigurationUI.png" alt="Diagram Configuration" height="300"/>
 
 
+
+
 ### TODOs
 
-- Export a GIF of the animation after creation
-- Finalize syntax for customizing chords from the text input
-- Add an option to not render chord titles
+- [ ] Export a GIF of the animation after creation
+- [ ] Finalize syntax for customizing chords from the text input
+- [ ] Add an option to not render chord titles
 
 ### Known Bugs
 
-- Sometimes the first chord appears without a title
+- [ ] Sometimes the first chord appears without a title
 
 
 ### Running Locally
 
 To run this project locally, clone this repo, `npm install`, and `npm start`
 
-### Notable mentions :)
+### Notable Mentions :)
 
 - Fingering is calculated using [chord-fingering](https://github.com/hyvyys/chord-fingering)
