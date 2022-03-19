@@ -745,7 +745,7 @@ export class ChordDiagram {
 
     drawChord(chord: Chord, animate?: boolean) {
         if (this.params.forcePosition === undefined || isNaN(this.params.forcePosition)) {
-            this.moveDiagramToFret(chord.startFret, animate);
+            this.moveDiagramToFret(chord.startFret || 1, animate);
         }
 
         for (let i = 1; i < 5; i++) {
@@ -906,6 +906,7 @@ export class ChordDiagram {
 
     drawChordTitle(title: string, chordTitleNumber: number, animate?: boolean) {
         this.elements.layers["chordTitle" + chordTitleNumber].opacity(1);
+        console.log(this.elements.layers["chordTitle" + chordTitleNumber]);
         if (animate) {
             this.elements["chordTitle" + chordTitleNumber] = this.drawText(
                 this.elements.layers["chordTitle" + chordTitleNumber],

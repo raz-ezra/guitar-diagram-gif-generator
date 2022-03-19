@@ -1,46 +1,53 @@
-# Getting Started with Create React App
+Simple UI for creating animated guitar chord diagrams
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Animated Guitar Chord Diagram](/docs/DiagramGif.gif)
 
-## Available Scripts
+# Usage
 
-In the project directory, you can run:
+To add chords to your sequence, use the right panel `Chord Sequencer` Tab.
+You can use the `Chord Sequence Text Input` at the top of the panel, or add chords individually.
 
-### `npm start`
+General settings (appearance, animation, etc.) can be changed in the `Diagram Configuration` tab.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Chord Sequencer
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+![Chords Text Input and Chord Box](/docs/ChordSequencerUI.png)
 
-### `npm test`
+### Chord Sequence Text Input
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Type your chord sequence, separating each chord with a space. 
+Each of the chords in the sequence will receive its own chord box down the panel where it can be customized.
 
-### `npm run build`
+### Chord Boxes
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+You can add more chords by clicking `+ Add Chord` at the bottom of the panel.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Each chord has the following controls:
+- **Chord**: The title of the chord. After changing, the other attributes will auto-fill, trying to find the best match. If no match was found, the chord will be marked with a warning.
+- **Position**: Choose from a list of available position to each chord.
+- **Start Fret**: The lowest fret in the chord position (the diagram shift between frets when animating, so we need to know the lowest fret to present)
+- **Strings + Finger Positioning**: For each string, you can mark if and which finger presses which fret.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Diagram Configuration
+In the `Diagram Configuration` you can change the appearance and animation properties of the diagram.
 
-### `npm run eject`
+![Diagram Configuration](/docs/DiagramConfigurationUI.png)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### TODOs
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Export a GIF of the animation after creation
+- Finalize syntax for customizing chords from the text input
+- Add an option to not render chord titles
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Known Bugs
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- Sometimes the first chord appears without a title
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Running Locally
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+To run this project locally, clone this repo, `npm install`, and `npm start`
+
+### Notable mentions :)
+
+- Fingering is calculated using [chord-fingering](https://github.com/hyvyys/chord-fingering)
